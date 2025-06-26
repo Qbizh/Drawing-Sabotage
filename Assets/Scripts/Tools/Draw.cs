@@ -4,7 +4,7 @@ public class Draw : Tool
 {
     bool lastPressed = false;
 
-    public override void OnUpdate(Vector2Int point, Vector2Int lastPoint, bool usePressed)
+    public override bool OnUpdate(Vector2Int point, Vector2Int lastPoint, bool usePressed)
     {
         Color color = DrawingManager.instance.GetColor();
         DrawingBoard board = DrawingManager.instance.GetBoard();
@@ -24,6 +24,8 @@ public class Draw : Tool
         }
 
         lastPressed = usePressed;
+
+        return usePressed;
     }
 
     public override void OnUse(Vector2Int point, Vector2Int lastPoint) {}

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5637976eed91f6249a9b2183bc965447, type: 3}
+  m_Name: Bomb
+  m_EditorClassIdentifier: 
+  cardName: Bomb
+  description: Blows up pixels
+  texture: {fileID: 2800000, guid: 65524bbb1b8ad2c41817249bc53aab91, type: 3}
+  prefab: {fileID: 8678720296005627792, guid: c474e65f74589c344a11f086522e477a, type: 3}

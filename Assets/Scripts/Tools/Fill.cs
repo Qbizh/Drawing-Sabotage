@@ -3,9 +3,7 @@ using System.Collections.Generic;
 
 public class Fill : Tool
 {
-    float colorThreshold = 0.005f;
-
-    public override void OnUpdate(Vector2Int point, Vector2Int lastPoint, bool usePressed) {}
+    public override bool OnUpdate(Vector2Int point, Vector2Int lastPoint, bool usePressed) { return false; }
 
     public override void OnUse(Vector2Int point, Vector2Int lastPoint) 
     {
@@ -14,7 +12,7 @@ public class Fill : Tool
         Color originalColor = board.GetPixel(point);
         Color targetColor = DrawingManager.instance.GetColor();
  
-        if (IsSameColor(originalColor, targetColor)) return;
+        if (TextureUtil.IsSameColor(originalColor, targetColor)) return;
 
         Queue<Vector2Int> fillQueue = new Queue<Vector2Int>();
 
@@ -36,11 +34,6 @@ public class Fill : Tool
         }
 
         board.UpdateHistory();
-    }
-
-    bool IsSameColor(Color color1, Color color2)
-    {
-        return Mathf.Abs(color1.r - color2.r) <= colorThreshold && Mathf.Abs(color1.g - color2.g) <= colorThreshold && Mathf.Abs(color1.b - color2.b) <= colorThreshold;
     }
 
     public override void OnBoardChanged() { }

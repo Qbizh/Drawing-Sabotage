@@ -4,7 +4,7 @@ public class Line : Tool
 {
     Vector2Int point0 = -Vector2Int.one;
 
-    public override void OnUpdate(Vector2Int point, Vector2Int lastPoint, bool usePressed) {}
+    public override bool OnUpdate(Vector2Int point, Vector2Int lastPoint, bool usePressed) { return false; }
 
     public override void OnUse(Vector2Int point, Vector2Int lastPoint) 
     { 

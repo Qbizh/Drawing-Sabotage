@@ -126,6 +126,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Grab"",
+                    ""type"": ""Button"",
+                    ""id"": ""e06e8952-2c35-4af7-86a3-45317d3d67c4"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Hold"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -238,6 +247,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Undo"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""44dc1fce-585e-403b-b60f-4430bf30d570"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Grab"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -250,6 +270,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Board_MousePosition = m_Board.FindAction("MousePosition", throwIfNotFound: true);
         m_Board_Undo = m_Board.FindAction("Undo", throwIfNotFound: true);
         m_Board_Redo = m_Board.FindAction("Redo", throwIfNotFound: true);
+        m_Board_Grab = m_Board.FindAction("Grab", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
@@ -334,6 +355,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Board_MousePosition;
     private readonly InputAction m_Board_Undo;
     private readonly InputAction m_Board_Redo;
+    private readonly InputAction m_Board_Grab;
     /// <summary>
     /// Provides access to input actions defined in input action map "Board".
     /// </summary>
@@ -361,6 +383,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Board/Redo".
         /// </summary>
         public InputAction @Redo => m_Wrapper.m_Board_Redo;
+        /// <summary>
+        /// Provides access to the underlying input action "Board/Grab".
+        /// </summary>
+        public InputAction @Grab => m_Wrapper.m_Board_Grab;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -399,6 +425,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Redo.started += instance.OnRedo;
             @Redo.performed += instance.OnRedo;
             @Redo.canceled += instance.OnRedo;
+            @Grab.started += instance.OnGrab;
+            @Grab.performed += instance.OnGrab;
+            @Grab.canceled += instance.OnGrab;
         }
 
         /// <summary>
@@ -422,6 +451,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Redo.started -= instance.OnRedo;
             @Redo.performed -= instance.OnRedo;
             @Redo.canceled -= instance.OnRedo;
+            @Grab.started -= instance.OnGrab;
+            @Grab.performed -= instance.OnGrab;
+            @Grab.canceled -= instance.OnGrab;
         }
 
         /// <summary>
@@ -490,5 +522,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnRedo(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Grab" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGrab(InputAction.CallbackContext context);
     }
 }

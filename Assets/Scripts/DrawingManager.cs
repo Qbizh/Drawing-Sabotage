@@ -6,11 +6,6 @@ public class DrawingManager : MonoBehaviour
 {
     public static DrawingManager instance;
 
-    PlayerInputActions inputActions;
-
-    InputAction useToolInput;
-    InputAction mousePosInput;
-
     [SerializeField] Tool[] tools =
     {
         new Draw(),
@@ -31,29 +26,12 @@ public class DrawingManager : MonoBehaviour
 
     public int UndoHistoryLength = 5;
 
+    Vector2 mouseInput = Vector2.zero;
+
     Vector2Int point;
     Vector2Int lastPoint;
 
-    private void OnEnable()
-    {
-        inputActions = new PlayerInputActions();
-
-        useToolInput = inputActions.Board.UseTool;
-        mousePosInput = inputActions.Board.MousePosition;
-
-        useToolInput.performed += OnUseTool;
-        inputActions.Board.Undo.performed += OnUndo;
-        inputActions.Board.Redo.performed += OnRedo;
-
-        inputActions.Board.Enable();
-    }
-
-    private void OnDisable()
-    {
-        inputActions.Board.Disable();
-    }
-
-    void Awake()
+    void OnEnable()
     {
         if (instance == null)
         {
@@ -62,8 +40,22 @@ public class DrawingManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+        Debug.Log(InputManager.instance);
+
+        InputManager.instance.onUseTool += OnUseTool;
+        InputManager.instance.onMouseMove += OnMouseMove;
+        InputManager.instance.onUndo += OnUndo;
+        InputManager.instance.onRedo += OnRedo;
 
         currentTool = tools[0];
+    }
+
+    private void OnDisable()
+    {
+        InputManager.instance.onUseTool -= OnUseTool;
+        InputManager.instance.onMouseMove -= OnMouseMove;
+        InputManager.instance.onUndo -= OnUndo;
+        InputManager.instance.onRedo -= OnRedo;
     }
 
     void Update()
@@ -73,7 +65,7 @@ public class DrawingManager : MonoBehaviour
 
     private void UpdateTool()
     {
-        Vector2 mousePos = Camera.main.ScreenToWorldPoint(mousePosInput.ReadValue<Vector2>());
+        Vector2 mousePos = Camera.main.ScreenToWorldPoint(mouseInput);
 
         Collider2D[] results = new Collider2D[1];
         var filter = new ContactFilter2D().NoFilter();
@@ -89,7 +81,7 @@ public class DrawingManager : MonoBehaviour
 
             point = currentBoard.GetPointOnBoard(mousePos);
 
-            currentTool.OnUpdate(point, lastPoint, useToolInput.IsPressed());
+            currentTool.OnUpdate(point, lastPoint, InputManager.instance.UseToolDown());
 
             currentBoard.ApplyChanges();
 
@@ -107,7 +99,7 @@ public class DrawingManager : MonoBehaviour
         lastBoard = currentBoard;
     }
 
-    void OnUseTool(InputAction.CallbackContext ctx)
+    void OnUseTool()
     {
         if (currentBoard != null)
         {
@@ -116,7 +108,12 @@ public class DrawingManager : MonoBehaviour
         }
     }
 
-    void OnUndo(InputAction.CallbackContext ctx)
+    void OnMouseMove(Vector2 newPos)
+    {
+        mouseInput = newPos;
+    }
+
+    void OnUndo()
     {
         if (currentBoard != null)
         {
@@ -124,7 +121,7 @@ public class DrawingManager : MonoBehaviour
         }
     }
 
-    void OnRedo(InputAction.CallbackContext ctx)
+    void OnRedo()
     {
         if (currentBoard != null)
         {
@@ -140,6 +137,14 @@ public class DrawingManager : MonoBehaviour
 
     public Color GetColor()
     {
+        if (currentBoard != null)
+        {
+            if (currentColor.a == 0)
+            {
+                return currentBoard.defaultBackground;
+            }
+        }
+
         return currentColor;
     }
 

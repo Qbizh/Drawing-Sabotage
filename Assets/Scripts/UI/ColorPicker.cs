@@ -10,7 +10,15 @@ public class ColorPicker : MonoBehaviour
     {
         GameObject clickedObj = EventSystem.current.currentSelectedGameObject;
         
-        DrawingManager.instance.SetColor(clickedObj.GetComponent<Button>().colors.normalColor);
+        if (clickedObj.GetComponent<Image>().sprite != null)
+        {
+            DrawingManager.instance.SetColor(new Color(0, 0, 0, 0));
+        } else
+        {
+            DrawingManager.instance.SetColor(clickedObj.GetComponent<Button>().colors.normalColor);
+        }
+
+       
 
         UpdateDisplay();
     }

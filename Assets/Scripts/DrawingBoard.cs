@@ -1,5 +1,5 @@
 using UnityEngine;
-using System.Collections;
+using System.IO;
 using System;
 
 public class DrawingBoard : MonoBehaviour
@@ -7,7 +7,9 @@ public class DrawingBoard : MonoBehaviour
     public Texture2D texture;
     Texture2D[] textureHistory;
 
-    [SerializeField] int currentHistoryIndex = 0;
+    int currentHistoryIndex = 0;
+
+    public Color defaultBackground;
 
     float boardToTextureRatio = 0;
 
@@ -16,7 +18,9 @@ public class DrawingBoard : MonoBehaviour
     int texWidth;
     int texHeight;
 
-    void Start()
+    public event Action textureChanged;
+
+    public void Start()
     {
         var sprite = GetComponent<SpriteRenderer>().sprite;
 
@@ -27,13 +31,12 @@ public class DrawingBoard : MonoBehaviour
         texture.filterMode = FilterMode.Point;
         texture.wrapMode = TextureWrapMode.Clamp;
 
-        textureHistory = new Texture2D[DrawingManager.instance.UndoHistoryLength];
 
         Color[] colors = new Color[texWidth * texHeight];
-        Array.Fill<Color>(colors, Color.white);
+        Array.Fill<Color>(colors, defaultBackground);
 
         texture.SetPixels(colors);
-        texture.Apply();
+        ApplyChanges();
 
         var newSprite = Sprite.Create(texture, new Rect(0,0, texWidth, texHeight), Vector2.one * 0.5f);
         GetComponent<SpriteRenderer>().sprite = newSprite;
@@ -41,10 +44,7 @@ public class DrawingBoard : MonoBehaviour
         actualBoardSize = new Vector2(texWidth * transform.lossyScale.x / newSprite.pixelsPerUnit, texHeight * transform.lossyScale.y / newSprite.pixelsPerUnit);
         boardToTextureRatio = texWidth / actualBoardSize.x;
 
-        Texture2D newSave = new Texture2D(texWidth, texHeight);
-        newSave.CopyPixels(texture);
-
-        textureHistory[0] = newSave;
+        ClearHistory();
     }
 
 
@@ -72,7 +72,7 @@ public class DrawingBoard : MonoBehaviour
 
                 if (dist <= strokeSize / 2)
                 {
-                    texture.SetPixel(x, y, color);
+                    SetPixel(new Vector2Int(x, y), color);
                 }
             }
         }
@@ -108,6 +108,7 @@ public class DrawingBoard : MonoBehaviour
     public void ApplyChanges()
     {
         texture.Apply();
+        textureChanged?.Invoke();
     }
 
     public void UpdateHistory()
@@ -135,6 +136,18 @@ public class DrawingBoard : MonoBehaviour
         textureHistory = updatedHistory;
     }
 
+    public void ClearHistory()
+    {
+        currentHistoryIndex = 0;
+
+        textureHistory = new Texture2D[DrawingManager.instance.UndoHistoryLength];
+
+        Texture2D newSave = new Texture2D(texWidth, texHeight);
+        newSave.CopyPixels(texture);
+
+        textureHistory[0] = newSave;
+    }
+
     public void UnDo()
     {
         if (currentHistoryIndex + 1 < textureHistory.Length && textureHistory[currentHistoryIndex + 1] != null)
@@ -142,20 +155,18 @@ public class DrawingBoard : MonoBehaviour
             currentHistoryIndex += 1;
 
             texture.CopyPixels(textureHistory[currentHistoryIndex]);
-            texture.Apply();
+            ApplyChanges();
         }
     }
 
     public void ReDo()
     {
-        
-
         if (currentHistoryIndex - 1 >= 0)
         {
             currentHistoryIndex -= 1;
 
             texture.CopyPixels(textureHistory[currentHistoryIndex]);
-            texture.Apply();
+            ApplyChanges();
         }
     }
 
@@ -166,6 +177,46 @@ public class DrawingBoard : MonoBehaviour
 
     public void SetPixel(Vector2Int point, Color color)
     {
+        if (color.a == 0)
+        {
+            color = defaultBackground;
+        }
+
         texture.SetPixel(point.x, point.y, color);
+
+    }
+
+    public static DrawingBoard GetMainBoard()
+    {
+        var mainBoard = GameObject.FindGameObjectWithTag("MainBoard");
+        
+        return mainBoard.GetComponent<DrawingBoard>();
+    }
+
+    [ContextMenu("Save Board To PNG")]
+    public void SaveBoardToPNG()
+    {
+        var texBytes = texture.EncodeToPNG();
+
+        var directory = Application.dataPath + "/SavedBoards/";
+
+        if (!Directory.Exists(directory)) { 
+
+            Directory.CreateDirectory(directory);
+        }
+
+        int count = 0;
+
+        var imgDir = directory + "Board";
+
+
+        while (File.Exists(imgDir + count + ".png"))
+        {
+            count++;
+        }
+
+        imgDir = imgDir + count + ".png";
+
+        File.WriteAllBytes(imgDir, texBytes);
     }
 }

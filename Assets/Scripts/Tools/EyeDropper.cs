@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class EyeDropper : Tool
 {
-    public override void OnUpdate(Vector2Int point, Vector2Int lastPoint, bool usePressed) {}
+    public override bool OnUpdate(Vector2Int point, Vector2Int lastPoint, bool usePressed) { return false; }
 
     public override void OnUse(Vector2Int point, Vector2Int lastPoint) 
     {

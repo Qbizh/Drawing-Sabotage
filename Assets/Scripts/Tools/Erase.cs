@@ -4,7 +4,7 @@ public class Erase : Tool
 {
     bool lastPressed = false;
 
-    public override void OnUpdate(Vector2Int point, Vector2Int lastPoint, bool usePressed)
+    public override bool OnUpdate(Vector2Int point, Vector2Int lastPoint, bool usePressed)
     {
         DrawingBoard board = DrawingManager.instance.GetBoard();
 
@@ -22,6 +22,8 @@ public class Erase : Tool
         }
 
         lastPressed = usePressed;
+
+        return usePressed;
     }
 
     public override void OnUse(Vector2Int point, Vector2Int lastPoint) { }
