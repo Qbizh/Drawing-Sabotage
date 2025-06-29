@@ -11,6 +11,8 @@ public class CardsManager : MonoBehaviour
 
     [SerializeField] CardDatabase cardDatabase;
 
+    [SerializeField] bool qualityOverride = true;
+
     GameObject cardObj;
 
     [SerializeField] CardData currentCard;
@@ -66,7 +68,7 @@ public class CardsManager : MonoBehaviour
 
         var currentBoard = DrawingManager.instance.GetBoard();
 
-        if (currentCard != null && !holdingCard && currentBoard != null && currentBoard.TryGetComponent<CardBoard>(out cardBoard) && cardBoard.GetScore() > 50f)
+        if (currentCard != null && !holdingCard && currentBoard != null && currentBoard.TryGetComponent<CardBoard>(out cardBoard) && (cardBoard.GetScore() > 50f || qualityOverride))
         {
             holdingCard = true;
             currentCardScore = cardBoard.GetScore();
@@ -114,8 +116,6 @@ public class CardsManager : MonoBehaviour
         if (!holdingCard) return false;
 
         PipesManager.instance.SendItemToClient(targetClient, cardDatabase.GetCardId(currentCard), currentCardScore, cardObj.GetComponent<SpriteRenderer>().sprite.texture.EncodeToPNG());
-
-        cardObj.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
 
         cardObj = Instantiate(cardPrefab);
         cardObj.SetActive(false);

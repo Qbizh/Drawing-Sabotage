@@ -48,19 +48,17 @@ public class DrawingBoard : MonoBehaviour
     }
 
 
-    public Vector2Int GetPointOnBoard(Vector2 mousePos)
+    public Vector2Int GetPointOnBoard(Vector2 position)
     {
-        Vector2 boardPos = mousePos - (Vector2)transform.position + (Vector2)actualBoardSize / 2;
+        Vector2 boardPos = position - (Vector2)transform.position + (Vector2)actualBoardSize / 2;
 
         Vector2Int point = new Vector2Int(Mathf.RoundToInt(boardPos.x * boardToTextureRatio), Mathf.RoundToInt(boardPos.y * boardToTextureRatio));
         
         return point;
     }
 
-    public void DrawPoint(Vector2Int point, Color color)
+    public void DrawPoint(Vector2Int point, Color color, float strokeSize)
     {
-        float strokeSize = DrawingManager.instance.GetStrokeSize();
-
         for (int y = (int)(point.y - strokeSize / 2); y <= (int)(point.y + strokeSize / 2); y++)
         {
             for (int x = (int)(point.x - strokeSize / 2); x <= (int)(point.x + strokeSize / 2); x++)
@@ -98,11 +96,34 @@ public class DrawingBoard : MonoBehaviour
 
                 if (predictedY == y || predictedX == x)
                 {
-                    DrawPoint(new Vector2Int(x, y), color);
+                    DrawPoint(new Vector2Int(x, y), color, DrawingManager.instance.GetStrokeSize());
                 }
 
             }
         }
+    }
+
+    public void StampTexture(Texture2D stamp, float scale, Vector2Int point)
+    {
+        //Color[] pixels = texture.GetPixels();
+
+        int targetResolution = Mathf.FloorToInt(stamp.width * scale);
+
+        for (int y = point.y - targetResolution / 2; y <= point.y + targetResolution / 2; y++)
+        {
+            if (y >= 0 || y <= texture.height)
+            {
+                for (int x = point.x - targetResolution / 2; y <= point.x + targetResolution / 2; x++)
+                {
+                    if (x >= 0 || x <= texture.width)
+                    {
+                        texture.SetPixel(x,y, stamp.GetPixel(Mathf.FloorToInt(x * 1 / scale), Mathf.FloorToInt(y * 1 / scale)));
+                    }
+                }
+            }
+        }
+
+        //texture.SetPixels(pixels);
     }
 
     public void ApplyChanges()

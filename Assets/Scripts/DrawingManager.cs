@@ -68,7 +68,9 @@ public class DrawingManager : MonoBehaviour
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(mouseInput);
 
         Collider2D[] results = new Collider2D[1];
-        var filter = new ContactFilter2D().NoFilter();
+        var filter = new ContactFilter2D();
+        filter.useLayerMask = true;
+        filter.layerMask = LayerMask.GetMask("Drawable");
 
         Physics2D.OverlapPoint(mousePos, filter, results);
 

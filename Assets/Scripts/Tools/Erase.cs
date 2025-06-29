@@ -10,7 +10,7 @@ public class Erase : Tool
 
         if (usePressed)
         {
-            board.DrawPoint(point, Color.white);
+            board.DrawPoint(point, Color.white, DrawingManager.instance.GetStrokeSize());
 
             if (lastPoint.x != -1)
             {

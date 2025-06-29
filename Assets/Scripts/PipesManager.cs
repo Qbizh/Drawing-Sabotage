@@ -6,7 +6,7 @@ public class PipesManager : NetworkBehaviour
 {
     public static PipesManager instance;
 
-    [SerializeField] GameObject playerPipe;
+    [SerializeField] Transform itemSpawn;
 
     [SerializeField] GameObject[] pipes;
 
@@ -56,6 +56,8 @@ public class PipesManager : NetworkBehaviour
         CardData data = cardDatabase.GetCard(cardId);
 
         var item = Instantiate(data.prefab);
-        item.GetComponent<ItemBehaviour>().Initialize(textureBytes);
+        item.GetComponent<ItemBehaviour>().Initialize(textureBytes, cardScore, itemSpawn.position);
+
+        item.GetComponent<ItemBehaviour>().Deploy();
     }
 }

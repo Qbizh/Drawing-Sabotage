@@ -6,13 +6,17 @@ public abstract class ItemBehaviour : MonoBehaviour
 
     SpriteRenderer spriteRenderer;
 
-    private void Awake()
+    public float score = 0;
+
+    public void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    public void Initialize(byte[] textureBytes)
+    public void Initialize(byte[] textureBytes, float cardScore, Vector3 origin)
     {
+        score = cardScore;
+
         var sprite = spriteRenderer.sprite;
         
         var newTexture = new Texture2D(sprite.texture.width, sprite.texture.height, TextureFormat.RGBA32, false);
@@ -24,10 +28,9 @@ public abstract class ItemBehaviour : MonoBehaviour
 
         sprite = Sprite.Create(newTexture, new Rect(0, 0, newTexture.width, newTexture.height), Vector2.one * 0.5f);
         spriteRenderer.sprite = sprite;
+
+        transform.position = origin;
     }
 
-    public void Deploy()
-    {
-        Debug.Log("DEPLOYED " + cardData.cardName);
-    }
+    public abstract void Deploy();
 }

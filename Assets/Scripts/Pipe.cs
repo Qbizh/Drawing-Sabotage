@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using FishNet.Connection;
+using DG.Tweening;
 
 public class Pipe : MonoBehaviour
 {
@@ -10,10 +11,7 @@ public class Pipe : MonoBehaviour
 
     [SerializeField] float minDist = 0.05f;
 
-    Rigidbody2D targetRb;
-
-    float initialDist;
-    float initialScale;
+    [SerializeField] float suckSpeed = 3.0f;
 
     NetworkConnection client;
 
@@ -30,29 +28,21 @@ public class Pipe : MonoBehaviour
         {
             if (CardsManager.instance.SendCard(client))
             {
-                targetRb = other.attachedRigidbody;
+                var initialDist = Vector2.Distance(entryPoint.position, other.transform.position);
+                var initialScale = other.transform.localScale;
 
-                initialDist = (targetRb.position - (Vector2)entryPoint.position).magnitude;
-                initialScale = targetRb.transform.localScale.x;
-            }
-        }
-    }
+                other.transform.DOMove(entryPoint.position, suckSpeed).SetSpeedBased(true).OnUpdate(() =>
+                {
+                    var dist = Vector2.Distance(entryPoint.position, other.transform.position);
+                    var distRatio = dist / initialDist;
 
-    private void FixedUpdate()
-    {
-        if (targetRb != null)
-        {
-            var dir = ((Vector2)entryPoint.position - targetRb.position).normalized;
+                    other.transform.localScale = initialScale * distRatio;
 
-            targetRb.AddForce(dir * 10f);
-
-            var dist = (targetRb.position - (Vector2)entryPoint.position).magnitude;
-
-            targetRb.transform.localScale = Vector3.one * Mathf.Lerp(initialScale, 0.1f, 1 - dist / initialDist);
-
-            if (dist < minDist)
-            {
-                Destroy(targetRb.gameObject);
+                    other.transform.Rotate(Vector3.forward * suckSpeed * Time.deltaTime * 100 * distRatio);
+                }).OnComplete(() =>
+                {
+                    Destroy(other.gameObject);
+                }).SetEase(Ease.Linear);
             }
         }
     }

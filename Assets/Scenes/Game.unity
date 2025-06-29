@@ -689,7 +689,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.08235294, g: 0.10980393, b: 0.34901962, a: 1}
+  m_Color: {r: 0.30980393, g: 0.13333334, b: 0.3254902, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2383,7 +2383,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.48432404, g: 0.17441793, b: 0.4943396, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -4526,7 +4526,7 @@ GameObject:
   - component: {fileID: 1027956289}
   - component: {fileID: 1027956291}
   - component: {fileID: 1027956292}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Board
   m_TagString: MainBoard
   m_Icon: {fileID: 0}
@@ -6347,7 +6347,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.08235294, g: 0.10980393, b: 0.34901962, a: 1}
+  m_Color: {r: 0.31351477, g: 0.12527588, b: 0.3207547, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -7280,7 +7280,7 @@ GameObject:
   - component: {fileID: 1656436874}
   - component: {fileID: 1656436876}
   - component: {fileID: 1656436877}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8761,7 +8761,7 @@ MonoBehaviour:
   _componentIndexCache: 255
   _addedNetworkObject: {fileID: 1896388459}
   _networkObjectCache: {fileID: 0}
-  playerPipe: {fileID: 0}
+  itemSpawn: {fileID: 913766537}
   pipes:
   - {fileID: 751240982}
   - {fileID: 1340203913}
@@ -8874,7 +8874,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3414662637742749596, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 78.099976
+      value: 78.09985
       objectReference: {fileID: 0}
     - target: {fileID: 3414662637742749596, guid: 0b650fca685f2eb41a86538aa883e4c1, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -9141,7 +9141,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.08397116, g: 0.10997988, b: 0.3490566, a: 1}
+  m_Color: {r: 0.30980393, g: 0.13333334, b: 0.3254902, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

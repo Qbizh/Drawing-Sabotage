@@ -447,3 +447,4 @@ MonoBehaviour:
   IdDisplay: {fileID: 5535406057966925852}
   entryPoint: {fileID: 2631561961157740954}
   minDist: 0.1
+  suckSpeed: 6

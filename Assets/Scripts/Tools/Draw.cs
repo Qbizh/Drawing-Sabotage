@@ -11,7 +11,7 @@ public class Draw : Tool
 
         if (usePressed)
         {
-            board.DrawPoint(point, color);
+            board.DrawPoint(point, color, DrawingManager.instance.GetStrokeSize());
 
             if (lastPoint.x != -1)
             {
