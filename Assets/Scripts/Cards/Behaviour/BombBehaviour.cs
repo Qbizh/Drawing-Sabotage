@@ -4,8 +4,6 @@ public class BombBehaviour : DynamicItemBehaviour
 {
     Animator animator;
 
-    float maxRadius = 200;
-
     [SerializeField] Texture2D craterStamp;
 
     private void Awake()
@@ -24,8 +22,9 @@ public class BombBehaviour : DynamicItemBehaviour
         var board = DrawingBoard.GetMainBoard();
 
         var pos = board.GetPointOnBoard(transform.position);
-        
-        board.StampTexture(craterStamp, 1, pos);
+       
+
+        board.StampTexture(craterStamp, 1, Random.Range(0, 360), pos);
         board.ApplyChanges();
 
         Destroy(gameObject);

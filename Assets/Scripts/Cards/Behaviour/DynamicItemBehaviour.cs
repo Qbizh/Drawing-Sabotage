@@ -49,7 +49,7 @@ public abstract class DynamicItemBehaviour : ItemBehaviour
         for (int i = 1; i < resolution; i++)
         {
             Vector2 pos = SampleBezier((float)i / resolution, startPos, controlPoint, endPos);
-            Debug.Log(lastPos + ", " + pos);
+            
             length += Vector2.Distance(lastPos, pos);
             lastPos = pos;
         }

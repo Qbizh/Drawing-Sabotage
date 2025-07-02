@@ -103,27 +103,110 @@ public class DrawingBoard : MonoBehaviour
         }
     }
 
-    public void StampTexture(Texture2D stamp, float scale, Vector2Int point)
+    /*public void StampTexture(Texture2D stamp, float scale, float rotation, Vector2Int point)
     {
-        //Color[] pixels = texture.GetPixels();
+        Color[] pixels = texture.GetPixels();
 
         int targetResolution = Mathf.FloorToInt(stamp.width * scale);
-
+        Debug.Log(pixels.Length);
         for (int y = point.y - targetResolution / 2; y <= point.y + targetResolution / 2; y++)
         {
-            if (y >= 0 || y <= texture.height)
+            if (y >= 0 && y < texture.height)
             {
-                for (int x = point.x - targetResolution / 2; y <= point.x + targetResolution / 2; x++)
+                for (int x = point.x - targetResolution / 2; x <= point.x + targetResolution / 2; x++)
                 {
-                    if (x >= 0 || x <= texture.width)
+                    if (x >= 0 && x < texture.width)
                     {
-                        texture.SetPixel(x,y, stamp.GetPixel(Mathf.FloorToInt(x * 1 / scale), Mathf.FloorToInt(y * 1 / scale)));
+                        
+                        float relX = x - point.x + targetResolution / 2;
+                        float relY = y - point.y + targetResolution / 2;
+                        //Debug.Log(relX + ", " + relY);
+
+                        var color = stamp.GetPixel(Mathf.FloorToInt(relX * 1 / scale), Mathf.FloorToInt(relY * 1 / scale));
+
+                        
+                        float theta = Mathf.Atan2(x - point.x, y - point.y) + rotation * Mathf.Deg2Rad;
+
+                        float r = Vector2.Distance(point, new Vector2(x, y));
+
+                        float rotX = r * Mathf.Cos(theta);
+                        float rotY = r * Mathf.Sin(theta);
+
+                        Debug.Log(rotX + ", " + rotY);
+
+                        int i = (Mathf.CeilToInt(rotY) + point.y) * texture.width + Mathf.CeilToInt(rotX) + point.x;
+                        int j = (Mathf.FloorToInt(rotY) + point.y) * texture.width + Mathf.FloorToInt(rotX) + point.x;
+
+                        if (i > pixels.Length)
+                        {
+
+                            Debug.Log(i + " = " + x + ", " + y);
+                        }
+
+
+                        pixels[i] = color.a != 0 ? color : pixels[i];
+                        pixels[j] = color.a != 0 ? color : pixels[j];
                     }
                 }
             }
         }
 
-        //texture.SetPixels(pixels);
+
+        //pixels[(point.y + targetResolution / 2) * texture.width + 0] = Color.magenta;
+        texture.SetPixels(pixels);
+    }*/
+
+    public void StampTexture(Texture2D stamp, float scale, float rotation, Vector2Int point)
+    {
+        
+        int targetResolution = Mathf.RoundToInt(stamp.width * scale);
+
+        int max = Mathf.CeilToInt(targetResolution * Mathf.Sin(rotation * Mathf.Deg2Rad) * 2);
+
+        var pixels = texture.GetPixels();
+
+        Debug.Log(max);
+
+        for (int y = 0; y < max; y++)
+        {
+            int dy = y + point.y - max / 2;
+            Debug.Log(dy);
+            if (dy >= 0 && dy < texHeight)
+            {
+                for (int x = 0; x < max; x++)
+                {
+                    int dx = x + point.x - max / 2;
+
+                    if (dx >= 0 && dx < texWidth)
+                    {
+                        float srcX = (dx - point.x) / scale;
+                        float srcY = (dy - point.y) / scale;
+
+                        float theta = Mathf.Atan2(srcX, srcY) + rotation * Mathf.Deg2Rad;
+
+                        float r = Mathf.Sqrt(srcX * srcX + srcY * srcY);
+
+                        srcX = r * Mathf.Cos(-theta) + stamp.width / 2;
+                        srcY = r * Mathf.Sin(-theta) + stamp.height / 2;
+
+
+                        if (srcX >= 0 && srcX < stamp.width && srcY >= 0 && srcY < stamp.height)
+                        {
+                            var color = stamp.GetPixel((int)srcX, (int)srcY);
+                            
+                            pixels[dy * texture.width + dx] = color;
+                        } else
+                        {
+                            Debug.LogWarning(srcX + ", " + srcY);
+                            pixels[dy * texture.width + dx] = new Color(0,0,0,0);
+                        }
+                    }
+                }
+            }
+            
+        }
+
+        texture.SetPixels(pixels);
     }
 
     public void ApplyChanges()
