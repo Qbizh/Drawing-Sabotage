@@ -161,7 +161,7 @@ public class DrawingBoard : MonoBehaviour
         
         int targetResolution = Mathf.RoundToInt(stamp.width * scale);
 
-        int max = Mathf.CeilToInt(targetResolution * Mathf.Sin(rotation * Mathf.Deg2Rad) * 2);
+        int max = Mathf.CeilToInt(targetResolution * Mathf.Sin(45 * Mathf.Deg2Rad) * 2);
 
         var pixels = texture.GetPixels();
 
@@ -170,7 +170,7 @@ public class DrawingBoard : MonoBehaviour
         for (int y = 0; y < max; y++)
         {
             int dy = y + point.y - max / 2;
-            Debug.Log(dy);
+            
             if (dy >= 0 && dy < texHeight)
             {
                 for (int x = 0; x < max; x++)
@@ -194,11 +194,7 @@ public class DrawingBoard : MonoBehaviour
                         {
                             var color = stamp.GetPixel((int)srcX, (int)srcY);
                             
-                            pixels[dy * texture.width + dx] = color;
-                        } else
-                        {
-                            Debug.LogWarning(srcX + ", " + srcY);
-                            pixels[dy * texture.width + dx] = new Color(0,0,0,0);
+                            pixels[dy * texture.width + dx] = color.a != 0 ? color : pixels[dy * texture.width + dx];
                         }
                     }
                 }

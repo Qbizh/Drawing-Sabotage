@@ -4,6 +4,8 @@ using System;
 
 public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions
 {
+    [SerializeField] CursorController cursorController;
+
     public static InputManager instance { get; private set; }
     PlayerInputActions playerInput;
 
@@ -40,7 +42,9 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions
 
     public void OnMousePosition(InputAction.CallbackContext ctx)
     {
-        onMouseMove?.Invoke(ctx.ReadValue<Vector2>());
+        Vector2 pos = cursorController.UpdatePosition(ctx.ReadValue<Vector2>());
+
+        onMouseMove?.Invoke(pos);
     }
 
     public void OnUndo(InputAction.CallbackContext ctx)

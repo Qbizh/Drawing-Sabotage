@@ -24,8 +24,10 @@ public class BombBehaviour : DynamicItemBehaviour
         var pos = board.GetPointOnBoard(transform.position);
        
 
-        board.StampTexture(craterStamp, 1, Random.Range(0, 360), pos);
+        board.StampTexture(craterStamp, score / 100, Random.Range(0, 360), pos);
         board.ApplyChanges();
+
+        board.ClearHistory();
 
         Destroy(gameObject);
     }
