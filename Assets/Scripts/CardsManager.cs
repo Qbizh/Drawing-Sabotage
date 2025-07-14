@@ -36,6 +36,11 @@ public class CardsManager : MonoBehaviour
         {
             Destroy(this);
         }
+    }
+
+    public void Init(List<CardData> newDeck)
+    {
+        playerDeck = newDeck;
 
         InputManager.instance.onGrab += OnGrab;
         InputManager.instance.onMouseMove += OnMouseMove;
@@ -50,7 +55,7 @@ public class CardsManager : MonoBehaviour
     public void ShuffleDeck(List<CardData> d)
     {
         deck = new Queue<CardData>();
-
+        
         d = new List<CardData>(d);
 
         while (d.Count > 0)

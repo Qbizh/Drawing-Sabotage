@@ -585,7 +585,7 @@ PlayerSettings:
     PS5: DOTWEEN
     QNX: DOTWEEN
     ReservedCFE: DOTWEEN
-    Standalone: FISHNET;FISHNET_V4;DOTWEEN
+    Standalone: FISHNET;FISHNET_V4;DOTWEEN;STEAMWORKS_NET
     VisionOS: DOTWEEN
     WebGL: DOTWEEN
     Windows Store Apps: DOTWEEN

@@ -28,7 +28,6 @@ public class CursorController : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(shakeOffset);
         transform.position = targetPos + shakeOffset;
     }
 
