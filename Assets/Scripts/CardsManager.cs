@@ -38,6 +38,19 @@ public class CardsManager : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        GameManager.gameStateStart += OnGameStart;
+    }
+
+    private void OnGameStart(GameManager.GameState state, bool asServer)
+    {
+        if (!asServer)
+        {
+            Init(cardDatabase.GetDeck(PlayerDataHolder.instance.playerData.deck));
+        }
+    }
+
     public void Init(List<CardData> newDeck)
     {
         playerDeck = newDeck;
@@ -50,6 +63,13 @@ public class CardsManager : MonoBehaviour
 
         ShuffleDeck(playerDeck);
         DrawCard();
+    }
+
+    private void OnDisable()
+    {
+        InputManager.instance.onGrab -= OnGrab;
+        InputManager.instance.onMouseMove -= OnMouseMove;
+        GameManager.gameStateStart -= OnGameStart;
     }
 
     public void ShuffleDeck(List<CardData> d)

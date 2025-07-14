@@ -1,6 +1,7 @@
 using UnityEngine;
 using FishNet.Object;
 using FishNet.Connection;
+using FishNet;
 
 public class PipesManager : NetworkBehaviour
 {
@@ -23,11 +24,28 @@ public class PipesManager : NetworkBehaviour
         }
     }
 
-    public override void OnStartClient()
+    private void OnEnable()
     {
-        base.OnStartClient();
+        GameManager.gameStateStart += OnGameStart;
+    }
 
-        
+    private void OnDisable()
+    {
+        GameManager.gameStateStart -= OnGameStart;
+    }
+
+    private void OnGameStart(GameManager.GameState state, bool asServer)
+    {
+        if (!asServer)
+        {
+            foreach (var client in InstanceFinder.ClientManager.Clients)
+            {
+                if (client.Value != InstanceFinder.ClientManager.Connection)
+                {
+                    AddPlayerPipe(client.Value);
+                }
+            }
+        }
     }
 
     public void AddPlayerPipe(NetworkConnection client)

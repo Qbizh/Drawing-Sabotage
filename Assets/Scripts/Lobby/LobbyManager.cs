@@ -62,7 +62,7 @@ public class LobbyManager : NetworkBehaviour
             {
                 Debug.Log("ALL LOADED");
 
-                GameManager.instance.InitializeGame();
+                GameManager.instance.Init();
             }
         }
     }

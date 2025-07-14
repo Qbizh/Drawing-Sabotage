@@ -79,6 +79,8 @@ public class RelayConnectionManager : MonoBehaviour, IConnectionManager
         } 
         catch (RelayServiceException ex) 
         {
+            Debug.LogException(ex);
+
             connectedJoinCode = null;
 
             return false;
