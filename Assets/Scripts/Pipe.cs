@@ -9,8 +9,6 @@ public class Pipe : MonoBehaviour
 
     [SerializeField] Transform entryPoint;
 
-    [SerializeField] float minDist = 0.05f;
-
     [SerializeField] float suckSpeed = 3.0f;
 
     NetworkConnection client;

@@ -28,9 +28,8 @@ public class CardBoard : DrawingBoard
         deckAnimator = GetComponentInChildren<Animator>();
 
         textureChanged += UpdateScore;
-        
+
         CardsManager.instance.onCardDraw += DrawCard;
-        LoadCardData();
     }
 
     private void DrawCard()
