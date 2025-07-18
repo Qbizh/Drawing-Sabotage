@@ -31,7 +31,7 @@ public class DrawingManager : MonoBehaviour
     Vector2Int point;
     Vector2Int lastPoint;
 
-    void OnEnable()
+    void Awake()
     {
         if (instance == null)
         {
@@ -40,14 +40,24 @@ public class DrawingManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        Debug.Log(InputManager.instance);
+    }
 
-        InputManager.instance.onUseTool += OnUseTool;
-        InputManager.instance.onMouseMove += OnMouseMove;
-        InputManager.instance.onUndo += OnUndo;
-        InputManager.instance.onRedo += OnRedo;
+    private void OnEnable()
+    {
+        GamePhaseManager.GamePhaseStart += OnGamePhaseStart;
+    }
 
-        currentTool = tools[0];
+    private void OnGamePhaseStart(GamePhaseManager.GamePhase state, bool asServer)
+    {
+        if (!asServer && state == GamePhaseManager.GamePhase.Game)
+        {
+            InputManager.instance.onUseTool += OnUseTool;
+            InputManager.instance.onMouseMove += OnMouseMove;
+            InputManager.instance.onUndo += OnUndo;
+            InputManager.instance.onRedo += OnRedo;
+
+            currentTool = tools[0];
+        }
     }
 
     private void OnDisable()
@@ -56,10 +66,14 @@ public class DrawingManager : MonoBehaviour
         InputManager.instance.onMouseMove -= OnMouseMove;
         InputManager.instance.onUndo -= OnUndo;
         InputManager.instance.onRedo -= OnRedo;
+
+        GamePhaseManager.GamePhaseStart += OnGamePhaseStart;
     }
 
     void Update()
     {
+        if (!GamePhaseManager.phaseActive) return;
+
         UpdateTool();
     }
 

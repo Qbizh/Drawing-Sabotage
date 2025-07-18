@@ -19,17 +19,32 @@ public class CardBoard : DrawingBoard
 
     float cardScore = 0;
 
-
-    public void Start()
+    private new void Start()
     {
         base.Start();
 
         completionDisplay = GetComponentInChildren<TMP_Text>();
         deckAnimator = GetComponentInChildren<Animator>();
+    }
 
+    private new void OnEnable()
+    {
+        base.OnEnable();
         textureChanged += UpdateScore;
 
-        CardsManager.instance.onCardDraw += DrawCard;
+        CardsManager.onCardDraw += DrawCard;
+    }
+
+    private new void OnDisable()
+    {
+        base.OnDisable();
+
+        cardScore = 0;
+        DisplayScore();
+
+        textureChanged -= UpdateScore;
+
+        CardsManager.onCardDraw -= DrawCard;
     }
 
     private void DrawCard()
@@ -39,8 +54,6 @@ public class CardBoard : DrawingBoard
 
     public void LoadCardData()
     {
-        //base.enabled = true;
-
         var oldSprite = cardDisplay.sprite;
 
         var newTexture = new Texture2D(oldSprite.texture.width, oldSprite.texture.height, TextureFormat.RGBA32, false);
@@ -105,6 +118,11 @@ public class CardBoard : DrawingBoard
 
         cardScore = score;
 
+        DisplayScore();
+    }
+
+    private void DisplayScore()
+    {
         completionDisplay.text = (cardScore).ToString() + "%";
     }
 

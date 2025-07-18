@@ -19,9 +19,9 @@ public class CardsManager : MonoBehaviour
     float currentCardScore = 0;
 
     [SerializeField] List<CardData> playerDeck;
-    [SerializeField] Queue<CardData> deck;
+    [SerializeField] Queue<CardData> deck = new Queue<CardData>();
 
-    public event Action onCardDraw;
+    public static event Action onCardDraw;
 
     Vector3 mousePos;
 
@@ -40,10 +40,10 @@ public class CardsManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManager.gameStateStart += OnGameStart;
+        GamePhaseManager.GamePhaseStart += OnGameStart;
     }
 
-    private void OnGameStart(GameManager.GameState state, bool asServer)
+    private void OnGameStart(GamePhaseManager.GamePhase state, bool asServer)
     {
         if (!asServer)
         {
@@ -69,12 +69,12 @@ public class CardsManager : MonoBehaviour
     {
         InputManager.instance.onGrab -= OnGrab;
         InputManager.instance.onMouseMove -= OnMouseMove;
-        GameManager.gameStateStart -= OnGameStart;
+        GamePhaseManager.GamePhaseStart -= OnGameStart;
     }
 
     public void ShuffleDeck(List<CardData> d)
     {
-        deck = new Queue<CardData>();
+        deck.Clear();
         
         d = new List<CardData>(d);
 

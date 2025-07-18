@@ -4,11 +4,11 @@ public class SceneAnimWrapper : MonoBehaviour
 {
     public void OnLoadIn()
     {
-        GameManager.instance.OnLoadIn();
+        GamePhaseManager.instance.OnLoadIn();
     }
 
     public void OnLoadOut()
     {
-        GameManager.instance.OnLoadOut();
+        GamePhaseManager.instance.OnLoadOut();
     }
 }

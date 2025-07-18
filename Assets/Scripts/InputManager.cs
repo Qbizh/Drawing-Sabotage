@@ -21,7 +21,6 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions
 
         playerInput = new PlayerInputActions();
         playerInput.Board.AddCallbacks(this);
-
         playerInput.Board.Enable();
     }
 
