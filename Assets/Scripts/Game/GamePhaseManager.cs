@@ -1,24 +1,21 @@
 using System;
 using System.Collections.Generic;
-using System.Timers;
-using FishNet;
-using FishNet.Connection;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using TMPro;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
-using static GameManager;
 
-public class GameManager : NetworkBehaviour
+public class GamePhaseManager : NetworkBehaviour
 {
-    public static GameManager instance;
+    public static GamePhaseManager instance;
 
-    public static event Action<GameState, bool> gameStateStart;
+    public static event Action<GamePhase, bool> GamePhaseStart;
+    public static bool phaseActive = false;
 
-    GameObject[] gameScenes = new GameObject[3];
+    [SerializeField] PhaseHandler[] phaseHandlers = new PhaseHandler[3];
+    [SerializeField] GameObject loadingScene;
 
-    float[] periodTimes = new float[3];
+    [SerializeField] float[] phaseTimes = new float[3];
 
     [SerializeField] CardDatabase cardDatabase;
 
@@ -26,25 +23,24 @@ public class GameManager : NetworkBehaviour
 
     [SerializeField] Animator scenesAnimator;
 
-    public readonly SyncTimer periodTimer = new SyncTimer();
-
     Texture2D[] playerDrawings;
 
     HashSet<PlayerData> loadedPlayers;
     
-    public enum GameState 
+    public enum GamePhase 
     { 
         Prompt,
         Game,
         Voting
     }
 
+    int roundAmount = 3;
     int currentRound = 0;
 
-    public readonly SyncVar<GameState> gameState = new SyncVar<GameState>();
-    public readonly SyncVar<GameState> lastGameState = new SyncVar<GameState>();
+    public readonly SyncVar<GamePhase> gamePhase = new SyncVar<GamePhase>();
+    public readonly SyncVar<GamePhase> lastGamePhase = new SyncVar<GamePhase>();
 
-    private GameObject currentScene;
+    private PhaseHandler currentPhaseHandler;
 
     public override void OnStartNetwork()
     {
@@ -57,6 +53,15 @@ public class GameManager : NetworkBehaviour
         {
             Destroy(gameObject);
         }
+
+        for (int i = 0; i < phaseHandlers.Length; i++)
+        {
+            phaseHandlers[i].gameObject.SetActive(false);
+        }
+
+        loadingScene.SetActive(true);
+        
+        GamePhaseStart += OnGamePhaseStart;
     }
 
     public override void OnStartServer()
@@ -68,8 +73,6 @@ public class GameManager : NetworkBehaviour
 
     public void Init()
     {
-        periodTimer.OnChange += OnTimerChanged;
-
         InitializeRound();
     }
 
@@ -79,59 +82,60 @@ public class GameManager : NetworkBehaviour
 
         if (currentRound == 1)
         {
-            gameState.Value = GameState.Prompt;
-            currentScene = gameScenes[(int)gameState.Value];
-            currentScene.SetActive(true);
+            gamePhase.Value = GamePhase.Prompt;
+            currentPhaseHandler = phaseHandlers[(int)gamePhase.Value];
+            currentPhaseHandler.gameObject.SetActive(true);
 
             TransitionToFirstRound();
         } else
         {
-            TransitionState(GameState.Prompt);
+            TransitionState(GamePhase.Prompt);
         }
     }
 
     [ObserversRpc]
     private void TransitionToFirstRound()
     {
-        currentScene = gameScenes[(int)gameState.Value];
-        currentScene.SetActive(true);
+        currentPhaseHandler = phaseHandlers[(int)gamePhase.Value];
+        currentPhaseHandler.gameObject.SetActive(true);
+
 
         scenesAnimator.SetTrigger("FirstLoad");
+    }
+
+    private void OnGamePhaseStart(GamePhase state, bool asServer)
+    {
+        phaseActive = true;
+
+        if (asServer)
+        {
+            //phaseTimer.StartTimer(phaseTimes[(int)state]);
+        }
     }
 
     private void OnTimerChanged(SyncTimerOperation op, float last, float next, bool asServer)
     {
         if (asServer && op == SyncTimerOperation.Finished) 
         {
-            Debug.Log("PERIOD OVER");
+            phaseActive = false;
 
-            if (gameState.Value == GameState.Voting)
+            if (gamePhase.Value == GamePhase.Voting)
             {
                 // collect results here 
 
                 InitializeRound();
+            } else
+            {
+                TransitionState((gamePhase.Value + 1));
             }
         }
     }
 
-    private void Update()
-    {
-        if (!periodTimer.Paused)
-        {
-            periodTimer.Update();
-
-            TimeSpan time = TimeSpan.FromSeconds(periodTimer.Remaining);
-            string display = time.ToString("m\\:ss");
-
-            timerDisplay.text = display;
-        }
-    }
-
     [Server]
-    private void TransitionState(GameState newState)
+    private void TransitionState(GamePhase newState)
     {
-        lastGameState.Value = gameState.Value;
-        gameState.Value = newState;
+        lastGamePhase.Value = gamePhase.Value;
+        gamePhase.Value = newState;
 
         StartClientLoad();
     }
@@ -167,19 +171,19 @@ public class GameManager : NetworkBehaviour
         ClientLoadedIn(PlayerDataHolder.instance.playerData);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     private void ClientLoadedIn(PlayerData player)
     {
         if (AllClientsLoaded(player)) 
         {
-            if (currentScene != null) 
+            if (currentPhaseHandler != null) 
             {
-                currentScene.SetActive(false);
+                currentPhaseHandler.gameObject.SetActive(false);
             }
 
-            currentScene = gameScenes[(int)gameState.Value];
+            currentPhaseHandler = phaseHandlers[(int)gamePhase.Value];
 
-            currentScene.SetActive(true);
+            currentPhaseHandler.gameObject.SetActive(true);
 
             ContinueClientLoad();
         }
@@ -189,14 +193,14 @@ public class GameManager : NetworkBehaviour
     [ObserversRpc]
     private void ContinueClientLoad()
     {
-        if (currentScene != null)
+        if (currentPhaseHandler != null)
         {
-            currentScene.SetActive(false);
+            currentPhaseHandler.gameObject.SetActive(false);
         }
 
-        currentScene = gameScenes[(int)gameState.Value];
+        currentPhaseHandler = phaseHandlers[(int)gamePhase.Value];
 
-        currentScene.SetActive(true);
+        currentPhaseHandler.gameObject.SetActive(true);
 
         scenesAnimator.speed = 1;
     }
@@ -206,12 +210,12 @@ public class GameManager : NetworkBehaviour
         ClientFinishedLoad(PlayerDataHolder.instance.playerData);
     }
 
-    [ServerRpc]
+    [ServerRpc(RequireOwnership =false)]
     private void ClientFinishedLoad(PlayerData player)
     {
         if (AllClientsLoaded(player))
         {
-            gameStateStart?.Invoke(gameState.Value, true); // currentState, isServer
+            GamePhaseStart?.Invoke(gamePhase.Value, true); // currentState, isServer
             StartStateClient();
         }
     }
@@ -219,7 +223,7 @@ public class GameManager : NetworkBehaviour
     [ObserversRpc]
     private void StartStateClient()
     {
-        gameStateStart?.Invoke(gameState.Value, false);
+        GamePhaseStart?.Invoke(gamePhase.Value, false);
     }
    
 }

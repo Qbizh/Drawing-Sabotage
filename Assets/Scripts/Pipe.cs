@@ -19,6 +19,13 @@ public class Pipe : MonoBehaviour
         IdDisplay.text = id.ToString();
     }
 
+    public void Disable()
+    {
+        client = null;
+        IdDisplay.text = "";
+
+        gameObject.SetActive(false);
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {

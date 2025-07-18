@@ -7,6 +7,8 @@ public class DrawingBoard : MonoBehaviour
     public Texture2D texture;
     Texture2D[] textureHistory;
 
+    SpriteRenderer spriteRenderer;
+
     int currentHistoryIndex = 0;
 
     public Color defaultBackground;
@@ -22,31 +24,57 @@ public class DrawingBoard : MonoBehaviour
 
     public void Start()
     {
-        var sprite = GetComponent<SpriteRenderer>().sprite;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+    }
 
-        texWidth = sprite.texture.width;
-        texHeight = sprite.texture.height;
+    public void OnEnable()
+    {
+        GamePhaseManager.GamePhaseStart += OnGamePhaseStart;
+    }
 
-        texture = new Texture2D(texWidth, texHeight);
-        texture.filterMode = FilterMode.Point;
-        texture.wrapMode = TextureWrapMode.Clamp;
+    public void OnDisable()
+    {
+        GamePhaseManager.GamePhaseStart -= OnGamePhaseStart;
 
+        if (texture != null)
+        {
+            ClearBoard();
+        }
+    }
 
+    private void OnGamePhaseStart(GamePhaseManager.GamePhase state, bool asServer)
+    {
+        if (!asServer && state == GamePhaseManager.GamePhase.Game)
+        {
+            var sprite = spriteRenderer.sprite;
+
+            texWidth = sprite.texture.width;
+            texHeight = sprite.texture.height;
+
+            texture = new Texture2D(texWidth, texHeight);
+            texture.filterMode = FilterMode.Point;
+            texture.wrapMode = TextureWrapMode.Clamp;
+
+            ClearBoard();
+
+            var newSprite = Sprite.Create(texture, new Rect(0, 0, texWidth, texHeight), Vector2.one * 0.5f);
+            spriteRenderer.sprite = newSprite;
+
+            actualBoardSize = new Vector2(texWidth * transform.lossyScale.x / newSprite.pixelsPerUnit, texHeight * transform.lossyScale.y / newSprite.pixelsPerUnit);
+            boardToTextureRatio = texWidth / actualBoardSize.x;
+
+            ClearHistory();
+        }
+    }
+
+    private void ClearBoard()
+    {
         Color[] colors = new Color[texWidth * texHeight];
         Array.Fill<Color>(colors, defaultBackground);
 
         texture.SetPixels(colors);
         ApplyChanges();
-
-        var newSprite = Sprite.Create(texture, new Rect(0,0, texWidth, texHeight), Vector2.one * 0.5f);
-        GetComponent<SpriteRenderer>().sprite = newSprite;
-
-        actualBoardSize = new Vector2(texWidth * transform.lossyScale.x / newSprite.pixelsPerUnit, texHeight * transform.lossyScale.y / newSprite.pixelsPerUnit);
-        boardToTextureRatio = texWidth / actualBoardSize.x;
-
-        ClearHistory();
     }
-
 
     public Vector2Int GetPointOnBoard(Vector2 position)
     {
