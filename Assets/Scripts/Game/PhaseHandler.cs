@@ -8,35 +8,55 @@ public class PhaseHandler : NetworkBehaviour
 {
     [SerializeField] private TMP_Text timerDisplay;
 
-    public readonly SyncTimer phaseTimer = new SyncTimer();
+    public float phaseTime = 15;
 
-    public void Init()
-    {
-        phaseTimer.OnChange += OnTimerChanged;
-    }
+    public static event Action<bool> phaseStart;
+    public static bool phaseActive = false;
+
+    public readonly SyncTimer phaseTimer = new SyncTimer();     // timer that triggers phase end on finish
+
 
     private void OnDisable()
     {
+        phaseActive = false;
         phaseTimer.OnChange -= OnTimerChanged;
     }
 
-    public void StartPhase()
+    [Server]
+    public virtual void StartPhase()
     {
-        
+        phaseTimer.OnChange += OnTimerChanged;
 
+        phaseActive = true;
+        phaseStart?.Invoke(true);
+
+        StartPhaseClient();
+    }
+
+    [ObserversRpc]
+    private void StartPhaseClient()
+    {
+        phaseActive = true;
+        phaseStart?.Invoke(false);
+    }
+
+    public void StartPhaseTimer()
+    {
+        timerDisplay.gameObject.SetActive(true);
+        phaseTimer.StartTimer(phaseTime);
     }
 
     private void OnTimerChanged(SyncTimerOperation op, float last, float next, bool asServer)
     {
         if (asServer && op == SyncTimerOperation.Finished)
         {
-            
+            GamePhaseManager.instance.EndPhase();
         }
     }
 
     private void Update()
     {
-        if (!phaseTimer.Paused)
+        if (timerDisplay != null && !phaseTimer.Paused)
         {
             phaseTimer.Update();
 

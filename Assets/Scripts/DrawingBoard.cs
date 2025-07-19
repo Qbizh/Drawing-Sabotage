@@ -29,12 +29,12 @@ public class DrawingBoard : MonoBehaviour
 
     public void OnEnable()
     {
-        GamePhaseManager.GamePhaseStart += OnGamePhaseStart;
+        PhaseHandler.phaseStart += OnGamePhaseStart;
     }
 
     public void OnDisable()
     {
-        GamePhaseManager.GamePhaseStart -= OnGamePhaseStart;
+        PhaseHandler.phaseStart -= OnGamePhaseStart;
 
         if (texture != null)
         {
@@ -42,9 +42,9 @@ public class DrawingBoard : MonoBehaviour
         }
     }
 
-    private void OnGamePhaseStart(GamePhaseManager.GamePhase state, bool asServer)
+    private void OnGamePhaseStart(bool asServer)
     {
-        if (!asServer && state == GamePhaseManager.GamePhase.Game)
+        if (!asServer)
         {
             var sprite = spriteRenderer.sprite;
 
@@ -131,58 +131,7 @@ public class DrawingBoard : MonoBehaviour
         }
     }
 
-    /*public void StampTexture(Texture2D stamp, float scale, float rotation, Vector2Int point)
-    {
-        Color[] pixels = texture.GetPixels();
 
-        int targetResolution = Mathf.FloorToInt(stamp.width * scale);
-        Debug.Log(pixels.Length);
-        for (int y = point.y - targetResolution / 2; y <= point.y + targetResolution / 2; y++)
-        {
-            if (y >= 0 && y < texture.height)
-            {
-                for (int x = point.x - targetResolution / 2; x <= point.x + targetResolution / 2; x++)
-                {
-                    if (x >= 0 && x < texture.width)
-                    {
-                        
-                        float relX = x - point.x + targetResolution / 2;
-                        float relY = y - point.y + targetResolution / 2;
-                        //Debug.Log(relX + ", " + relY);
-
-                        var color = stamp.GetPixel(Mathf.FloorToInt(relX * 1 / scale), Mathf.FloorToInt(relY * 1 / scale));
-
-                        
-                        float theta = Mathf.Atan2(x - point.x, y - point.y) + rotation * Mathf.Deg2Rad;
-
-                        float r = Vector2.Distance(point, new Vector2(x, y));
-
-                        float rotX = r * Mathf.Cos(theta);
-                        float rotY = r * Mathf.Sin(theta);
-
-                        Debug.Log(rotX + ", " + rotY);
-
-                        int i = (Mathf.CeilToInt(rotY) + point.y) * texture.width + Mathf.CeilToInt(rotX) + point.x;
-                        int j = (Mathf.FloorToInt(rotY) + point.y) * texture.width + Mathf.FloorToInt(rotX) + point.x;
-
-                        if (i > pixels.Length)
-                        {
-
-                            Debug.Log(i + " = " + x + ", " + y);
-                        }
-
-
-                        pixels[i] = color.a != 0 ? color : pixels[i];
-                        pixels[j] = color.a != 0 ? color : pixels[j];
-                    }
-                }
-            }
-        }
-
-
-        //pixels[(point.y + targetResolution / 2) * texture.width + 0] = Color.magenta;
-        texture.SetPixels(pixels);
-    }*/
 
     public void StampTexture(Texture2D stamp, float scale, float rotation, Vector2Int point)
     {

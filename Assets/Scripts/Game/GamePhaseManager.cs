@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
@@ -8,14 +7,11 @@ using UnityEngine;
 public class GamePhaseManager : NetworkBehaviour
 {
     public static GamePhaseManager instance;
-
-    public static event Action<GamePhase, bool> GamePhaseStart;
-    public static bool phaseActive = false;
+    
+    public GameDataHolder gameDataHolder;
 
     [SerializeField] PhaseHandler[] phaseHandlers = new PhaseHandler[3];
     [SerializeField] GameObject loadingScene;
-
-    [SerializeField] float[] phaseTimes = new float[3];
 
     [SerializeField] CardDatabase cardDatabase;
 
@@ -54,14 +50,14 @@ public class GamePhaseManager : NetworkBehaviour
             Destroy(gameObject);
         }
 
+        gameDataHolder = GetComponent<GameDataHolder>();
+
         for (int i = 0; i < phaseHandlers.Length; i++)
         {
             phaseHandlers[i].gameObject.SetActive(false);
         }
 
         loadingScene.SetActive(true);
-        
-        GamePhaseStart += OnGamePhaseStart;
     }
 
     public override void OnStartServer()
@@ -103,31 +99,16 @@ public class GamePhaseManager : NetworkBehaviour
         scenesAnimator.SetTrigger("FirstLoad");
     }
 
-    private void OnGamePhaseStart(GamePhase state, bool asServer)
+    [Server]
+    public void EndPhase()
     {
-        phaseActive = true;
-
-        if (asServer)
+        if (gamePhase.Value == GamePhase.Voting)
         {
-            //phaseTimer.StartTimer(phaseTimes[(int)state]);
+            InitializeRound();
         }
-    }
-
-    private void OnTimerChanged(SyncTimerOperation op, float last, float next, bool asServer)
-    {
-        if (asServer && op == SyncTimerOperation.Finished) 
+        else
         {
-            phaseActive = false;
-
-            if (gamePhase.Value == GamePhase.Voting)
-            {
-                // collect results here 
-
-                InitializeRound();
-            } else
-            {
-                TransitionState((gamePhase.Value + 1));
-            }
+            TransitionState((gamePhase.Value + 1));
         }
     }
 
@@ -215,15 +196,7 @@ public class GamePhaseManager : NetworkBehaviour
     {
         if (AllClientsLoaded(player))
         {
-            GamePhaseStart?.Invoke(gamePhase.Value, true); // currentState, isServer
-            StartStateClient();
+            currentPhaseHandler.StartPhase();
         }
     }
-
-    [ObserversRpc]
-    private void StartStateClient()
-    {
-        GamePhaseStart?.Invoke(gamePhase.Value, false);
-    }
-   
 }

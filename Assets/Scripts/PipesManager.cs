@@ -26,12 +26,12 @@ public class PipesManager : NetworkBehaviour
 
     private void OnEnable()
     {
-        GamePhaseManager.GamePhaseStart += OnGamePhaseStart;
+        PhaseHandler.phaseStart += OnGamePhaseStart;
     }
 
     private void OnDisable()
     {
-        GamePhaseManager.GamePhaseStart -= OnGamePhaseStart;
+        PhaseHandler.phaseStart -= OnGamePhaseStart;
 
         foreach (var pipe in pipes)
         {
@@ -39,9 +39,9 @@ public class PipesManager : NetworkBehaviour
         }
     }
 
-    private void OnGamePhaseStart(GamePhaseManager.GamePhase state, bool asServer)
+    private void OnGamePhaseStart(bool asServer)
     {
-        if (!asServer && state == GamePhaseManager.GamePhase.Game)
+        if (!asServer)
         {
             foreach (var client in InstanceFinder.ClientManager.Clients)
             {

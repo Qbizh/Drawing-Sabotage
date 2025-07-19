@@ -44,12 +44,12 @@ public class DrawingManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GamePhaseManager.GamePhaseStart += OnGamePhaseStart;
+        PhaseHandler.phaseStart += OnGamePhaseStart;
     }
 
-    private void OnGamePhaseStart(GamePhaseManager.GamePhase state, bool asServer)
+    private void OnGamePhaseStart(bool asServer)
     {
-        if (!asServer && state == GamePhaseManager.GamePhase.Game)
+        if (!asServer)
         {
             InputManager.instance.onUseTool += OnUseTool;
             InputManager.instance.onMouseMove += OnMouseMove;
@@ -67,12 +67,12 @@ public class DrawingManager : MonoBehaviour
         InputManager.instance.onUndo -= OnUndo;
         InputManager.instance.onRedo -= OnRedo;
 
-        GamePhaseManager.GamePhaseStart += OnGamePhaseStart;
+        PhaseHandler.phaseStart += OnGamePhaseStart;
     }
 
     void Update()
     {
-        if (!GamePhaseManager.phaseActive) return;
+        if (!PhaseHandler.phaseActive) return;
 
         UpdateTool();
     }

@@ -40,10 +40,10 @@ public class CardsManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GamePhaseManager.GamePhaseStart += OnGameStart;
+        PhaseHandler.phaseStart += OnGameStart;
     }
 
-    private void OnGameStart(GamePhaseManager.GamePhase state, bool asServer)
+    private void OnGameStart(bool asServer)
     {
         if (!asServer)
         {
@@ -69,7 +69,7 @@ public class CardsManager : MonoBehaviour
     {
         InputManager.instance.onGrab -= OnGrab;
         InputManager.instance.onMouseMove -= OnMouseMove;
-        GamePhaseManager.GamePhaseStart -= OnGameStart;
+        PhaseHandler.phaseStart -= OnGameStart;
     }
 
     public void ShuffleDeck(List<CardData> d)
