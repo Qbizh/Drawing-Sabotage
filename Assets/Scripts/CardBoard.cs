@@ -19,9 +19,9 @@ public class CardBoard : DrawingBoard
 
     float cardScore = 0;
 
-    private new void Start()
+    private new void Awake()
     {
-        base.Start();
+        base.Awake();
 
         completionDisplay = GetComponentInChildren<TMP_Text>();
         deckAnimator = GetComponentInChildren<Animator>();

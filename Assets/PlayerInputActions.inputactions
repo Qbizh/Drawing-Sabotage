@@ -174,6 +174,34 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "PromptGenerator",
+            "id": "d3a90995-b77b-49d9-9d3b-f696dec82ecb",
+            "actions": [
+                {
+                    "name": "ReRoll",
+                    "type": "Button",
+                    "id": "ee18a70e-29a5-46f8-8be9-0c212b0485fd",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "54523026-005d-4918-9939-3087d5e5c9e6",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ReRoll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
         }
     ],
     "controlSchemes": []

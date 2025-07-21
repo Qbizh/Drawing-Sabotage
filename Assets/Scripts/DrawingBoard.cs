@@ -22,7 +22,7 @@ public class DrawingBoard : MonoBehaviour
 
     public event Action textureChanged;
 
-    public void Start()
+    public void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
     }

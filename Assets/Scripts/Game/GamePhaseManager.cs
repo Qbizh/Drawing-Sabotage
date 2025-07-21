@@ -10,7 +10,7 @@ public class GamePhaseManager : NetworkBehaviour
     
     public GameDataHolder gameDataHolder;
 
-    [SerializeField] PhaseHandler[] phaseHandlers = new PhaseHandler[3];
+    [SerializeField] PhaseHandler[] phaseHandlers = new PhaseHandler[4];
     [SerializeField] GameObject loadingScene;
 
     [SerializeField] CardDatabase cardDatabase;
@@ -25,8 +25,9 @@ public class GamePhaseManager : NetworkBehaviour
     
     public enum GamePhase 
     { 
-        Prompt,
-        Game,
+        PromptInput,
+        PromptGeneration,
+        Drawing,
         Voting
     }
 
@@ -52,10 +53,10 @@ public class GamePhaseManager : NetworkBehaviour
 
         gameDataHolder = GetComponent<GameDataHolder>();
 
-        for (int i = 0; i < phaseHandlers.Length; i++)
+        /*for (int i = 0; i < phaseHandlers.Length; i++)
         {
             phaseHandlers[i].gameObject.SetActive(false);
-        }
+        }*/
 
         loadingScene.SetActive(true);
     }
@@ -78,20 +79,27 @@ public class GamePhaseManager : NetworkBehaviour
 
         if (currentRound == 1)
         {
-            gamePhase.Value = GamePhase.Prompt;
+            gamePhase.Value = GamePhase.PromptInput;
             currentPhaseHandler = phaseHandlers[(int)gamePhase.Value];
             currentPhaseHandler.gameObject.SetActive(true);
 
             TransitionToFirstRound();
         } else
         {
-            TransitionState(GamePhase.Prompt);
+            if (gameDataHolder.AssessFormats())
+            {
+                TransitionState(GamePhase.PromptGeneration);
+            } else
+            {
+                TransitionState(GamePhase.PromptInput);
+            }
         }
     }
 
     [ObserversRpc]
     private void TransitionToFirstRound()
     {
+        Debug.Log("first round");
         currentPhaseHandler = phaseHandlers[(int)gamePhase.Value];
         currentPhaseHandler.gameObject.SetActive(true);
 
@@ -188,6 +196,7 @@ public class GamePhaseManager : NetworkBehaviour
 
     public void OnLoadOut()
     {
+        Debug.Log(currentPhaseHandler.enabled);
         ClientFinishedLoad(PlayerDataHolder.instance.playerData);
     }
 
@@ -196,6 +205,7 @@ public class GamePhaseManager : NetworkBehaviour
     {
         if (AllClientsLoaded(player))
         {
+            Debug.Log(currentPhaseHandler.IsSpawned);
             currentPhaseHandler.StartPhase();
         }
     }

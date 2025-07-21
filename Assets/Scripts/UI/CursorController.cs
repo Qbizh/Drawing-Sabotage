@@ -22,7 +22,7 @@ public class CursorController : MonoBehaviour
             Destroy(this);
         }
 
-        Cursor.visible = false;
+        //Cursor.visible = false;
         GetComponent<Image>().enabled = true;
     }
 
