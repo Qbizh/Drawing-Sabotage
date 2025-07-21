@@ -99,7 +99,6 @@ public class GamePhaseManager : NetworkBehaviour
     [ObserversRpc]
     private void TransitionToFirstRound()
     {
-        Debug.Log("first round");
         currentPhaseHandler = phaseHandlers[(int)gamePhase.Value];
         currentPhaseHandler.gameObject.SetActive(true);
 
@@ -196,7 +195,6 @@ public class GamePhaseManager : NetworkBehaviour
 
     public void OnLoadOut()
     {
-        Debug.Log(currentPhaseHandler.enabled);
         ClientFinishedLoad(PlayerDataHolder.instance.playerData);
     }
 
@@ -205,7 +203,6 @@ public class GamePhaseManager : NetworkBehaviour
     {
         if (AllClientsLoaded(player))
         {
-            Debug.Log(currentPhaseHandler.IsSpawned);
             currentPhaseHandler.StartPhase();
         }
     }

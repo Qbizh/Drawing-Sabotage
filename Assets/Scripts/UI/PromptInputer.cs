@@ -24,6 +24,7 @@ public class PromptInputer : MonoBehaviour
     {
         if (!asServer)
         {
+            Debug.Log("phase started on inputer");
             tagsQueue = new Queue<string>(promptPhaseHandler.tags);
 
             foreach (string tag in tagsQueue)

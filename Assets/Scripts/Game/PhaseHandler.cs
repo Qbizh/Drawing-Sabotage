@@ -36,6 +36,13 @@ public class PhaseHandler : NetworkBehaviour
         gameObject.SetActive(false);
     }
 
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+
+        gameObject.SetActive(false);
+    }
+
     [Server]
     public virtual void StartPhase()
     {
@@ -54,10 +61,19 @@ public class PhaseHandler : NetworkBehaviour
         phaseStart?.Invoke(false);
     }
 
+    [Server]
     public void StartPhaseTimer()
     {
         timerDisplay.gameObject.SetActive(true);
         phaseTimer.StartTimer(phaseTime);
+
+        ShowPhaseTimerClient();
+    }
+
+    [ObserversRpc]
+    public void ShowPhaseTimerClient()
+    {
+        timerDisplay.gameObject.SetActive(true);
     }
 
     private void OnTimerChanged(SyncTimerOperation op, float last, float next, bool asServer)

@@ -51,15 +51,6 @@ public class PromptGeneratorDisplay : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void GeneratePrompt()
     {
-
-
-        foreach (GameObject line in promptLines.Keys)
-        {
-            Destroy(line);
-        }
-
-        promptLines.Clear();
-
         GameDataHolder.PromptData promptData = GamePhaseManager.instance.gameDataHolder.GeneratePrompt();
 
         SetUpPromptDisplay(promptData);
@@ -68,6 +59,13 @@ public class PromptGeneratorDisplay : NetworkBehaviour
     [ObserversRpc]
     private void SetUpPromptDisplay(GameDataHolder.PromptData promptData)
     {
+        foreach (GameObject line in promptLines.Keys)
+        {
+            Destroy(line);
+        }
+
+        promptLines.Clear();
+
         string[] splitFormat = Regex.Split(promptData.format, @"(\[.*?\])");
 
         GameObject currentLine = null;
