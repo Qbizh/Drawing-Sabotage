@@ -20,16 +20,21 @@ public class PromptInputer : MonoBehaviour
         PhaseHandler.phaseStart += OnPhaseStart;
     }
 
+    private void OnDisable()
+    {
+        PhaseHandler.phaseStart -= OnPhaseStart;
+    }
+
     private void OnPhaseStart(bool asServer)
     {
         if (!asServer)
         {
-            Debug.Log("phase started on inputer");
             tagsQueue = new Queue<string>(promptPhaseHandler.tags);
 
             foreach (string tag in tagsQueue)
             {
                 tagColors[tag] = Color.HSVToRGB(Random.Range(0f, 1f), 0.57f, 0.75f);
+                
             }
 
             GetNextTag();

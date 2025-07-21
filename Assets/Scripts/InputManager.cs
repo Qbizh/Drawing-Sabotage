@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 
-public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, PlayerInputActions.IPromptGeneratorActions
+public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, PlayerInputActions.IPromptGeneratorActions, PlayerInputActions.IAlwaysEnabledActions
 {
     [SerializeField] CursorController cursorController;
 
@@ -23,6 +23,9 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, Pla
 
         playerInput.Board.AddCallbacks(this);
         playerInput.PromptGenerator.AddCallbacks(this);
+        playerInput.AlwaysEnabled.AddCallbacks(this);
+
+        playerInput.AlwaysEnabled.Enable();
 
         PhaseHandler.phaseStart += OnPhaseStart;
     }
@@ -33,10 +36,10 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, Pla
 
         foreach (var actionMap in playerInput.asset.actionMaps)
         {
-            if (actionMap != map)
+            if (actionMap != map && actionMap != (InputActionMap)playerInput.AlwaysEnabled)
             {
                 actionMap.Disable();
-            } else
+            } else if (actionMap == map) 
             {
                 Debug.Log(map);
                 actionMap.Enable();
@@ -69,6 +72,15 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, Pla
         }
     }
 
+    // Always Enabled
+    public event Action<Vector2> onMouseMove;
+    public void OnMousePosition(InputAction.CallbackContext ctx)
+    {
+        Vector2 pos = cursorController.UpdatePosition(ctx.ReadValue<Vector2>());
+
+        onMouseMove?.Invoke(pos);
+    }
+
 
     // Prompt Generating Phase
     public event Action onReRoll;
@@ -85,7 +97,6 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, Pla
     // Drawing Phase
 
     public event Action onUseTool;
-    public event Action <Vector2> onMouseMove;
     public event Action onUndo;
     public event Action onRedo;
     public event Action onGrab;
@@ -96,13 +107,6 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, Pla
         {
             onUseTool?.Invoke();
         }
-    }
-
-    public void OnMousePosition(InputAction.CallbackContext ctx)
-    {
-        Vector2 pos = cursorController.UpdatePosition(ctx.ReadValue<Vector2>());
-
-        onMouseMove?.Invoke(pos);
     }
 
     public void OnUndo(InputAction.CallbackContext ctx)

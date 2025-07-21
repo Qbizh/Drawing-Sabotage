@@ -11,6 +11,7 @@ public class PromptInputPhaseHandler : PhaseHandler
     public override void StartPhase()
     {
         tags = GamePhaseManager.instance.gameDataHolder.GetUnfulfilledFormatTags();
+
         UpdateTagsClient(tags.ToList());
 
         base.StartPhase();  
