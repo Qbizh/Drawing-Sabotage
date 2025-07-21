@@ -15,15 +15,6 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "MousePosition",
-                    "type": "Value",
-                    "id": "6ae0ac0e-dffe-488e-a24d-cab6e983dda4",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Undo",
                     "type": "Button",
                     "id": "85febbfc-d4de-4ccc-a96f-9c534e951c0b",
@@ -108,17 +99,6 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "6bcfdd74-d1b6-432c-8db0-029f76f9fb53",
-                    "path": "<Mouse>/position",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "MousePosition",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "Button With One Modifier",
                     "id": "e76e7fe2-d3d1-4d42-9f0d-3a9c9e44cdbe",
                     "path": "ButtonWithOneModifier",
@@ -198,6 +178,34 @@
                     "processors": "",
                     "groups": "",
                     "action": "ReRoll",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "AlwaysEnabled",
+            "id": "891d16dc-58c3-4d08-bddf-438e7a38872c",
+            "actions": [
+                {
+                    "name": "MousePosition",
+                    "type": "Value",
+                    "id": "35e31d92-aa96-481a-8b4f-362c9021a2ec",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ed9e97cc-c311-4bd8-b7b3-94f61e6488fc",
+                    "path": "<Mouse>/position",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MousePosition",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

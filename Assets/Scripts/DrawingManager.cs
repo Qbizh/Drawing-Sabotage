@@ -67,7 +67,7 @@ public class DrawingManager : MonoBehaviour
         InputManager.instance.onUndo -= OnUndo;
         InputManager.instance.onRedo -= OnRedo;
 
-        PhaseHandler.phaseStart += OnGamePhaseStart;
+        PhaseHandler.phaseStart -= OnGamePhaseStart;
     }
 
     void Update()

@@ -29,7 +29,6 @@ public class LobbyMenu : MonoBehaviour
 
     public void OnLobbyManagerSpawned()
     {
-        Debug.Log("LOBBY MANAGER SPAAAAAAAAAWNED");
         LobbyManager.instance.players.OnChange += OnPlayersChanged;
     }
 
@@ -82,7 +81,6 @@ public class LobbyMenu : MonoBehaviour
             Destroy(playerCards[data.index]);
         }
 
-        Debug.Log(data.name + ", " + data.index);
         var newPlayerCard = Instantiate(playerCardPrefab, playersPanel);
 
         newPlayerCard.GetComponentInChildren<TMP_Text>().text = data.name;
@@ -98,12 +96,8 @@ public class LobbyMenu : MonoBehaviour
 
     private void OnPlayersChanged(SyncListOperation op, int index, PlayerData oldItem, PlayerData newItem, bool asServer)
     {
-        Debug.Log("PLAYERS CHANGEDDDDDDDDDDD");
-
         if (!asServer)
         {
-            Debug.Log("AND ITS NOT THE SERVER");
-
             if (op == SyncListOperation.Add)
             {
                 AddPlayerCard(newItem);

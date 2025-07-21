@@ -60,8 +60,6 @@ public class LobbyManager : NetworkBehaviour
 
             if (loadedClients.Count == players.Count)
             {
-                Debug.Log("ALL LOADED");
-
                 GamePhaseManager.instance.Init();
             }
         }
@@ -70,8 +68,6 @@ public class LobbyManager : NetworkBehaviour
     [Server]
     public void LoadGame()
     {
-        Debug.Log("GAME LOADING");
-
         loadedClients.Clear();
 
         var sceneLoadData = new SceneLoadData("Game");

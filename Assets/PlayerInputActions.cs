@@ -101,15 +101,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""MousePosition"",
-                    ""type"": ""Value"",
-                    ""id"": ""6ae0ac0e-dffe-488e-a24d-cab6e983dda4"",
-                    ""expectedControlType"": ""Vector2"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": true
-                },
-                {
                     ""name"": ""Undo"",
                     ""type"": ""Button"",
                     ""id"": ""85febbfc-d4de-4ccc-a96f-9c534e951c0b"",
@@ -190,17 +181,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Redo"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""6bcfdd74-d1b6-432c-8db0-029f76f9fb53"",
-                    ""path"": ""<Mouse>/position"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""MousePosition"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -288,6 +268,34 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""AlwaysEnabled"",
+            ""id"": ""891d16dc-58c3-4d08-bddf-438e7a38872c"",
+            ""actions"": [
+                {
+                    ""name"": ""MousePosition"",
+                    ""type"": ""Value"",
+                    ""id"": ""35e31d92-aa96-481a-8b4f-362c9021a2ec"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""ed9e97cc-c311-4bd8-b7b3-94f61e6488fc"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MousePosition"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -295,19 +303,22 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // Board
         m_Board = asset.FindActionMap("Board", throwIfNotFound: true);
         m_Board_UseTool = m_Board.FindAction("UseTool", throwIfNotFound: true);
-        m_Board_MousePosition = m_Board.FindAction("MousePosition", throwIfNotFound: true);
         m_Board_Undo = m_Board.FindAction("Undo", throwIfNotFound: true);
         m_Board_Redo = m_Board.FindAction("Redo", throwIfNotFound: true);
         m_Board_Grab = m_Board.FindAction("Grab", throwIfNotFound: true);
         // PromptGenerator
         m_PromptGenerator = asset.FindActionMap("PromptGenerator", throwIfNotFound: true);
         m_PromptGenerator_ReRoll = m_PromptGenerator.FindAction("ReRoll", throwIfNotFound: true);
+        // AlwaysEnabled
+        m_AlwaysEnabled = asset.FindActionMap("AlwaysEnabled", throwIfNotFound: true);
+        m_AlwaysEnabled_MousePosition = m_AlwaysEnabled.FindAction("MousePosition", throwIfNotFound: true);
     }
 
     ~@PlayerInputActions()
     {
         UnityEngine.Debug.Assert(!m_Board.enabled, "This will cause a leak and performance issues, PlayerInputActions.Board.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_PromptGenerator.enabled, "This will cause a leak and performance issues, PlayerInputActions.PromptGenerator.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_AlwaysEnabled.enabled, "This will cause a leak and performance issues, PlayerInputActions.AlwaysEnabled.Disable() has not been called.");
     }
 
     /// <summary>
@@ -384,7 +395,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputActionMap m_Board;
     private List<IBoardActions> m_BoardActionsCallbackInterfaces = new List<IBoardActions>();
     private readonly InputAction m_Board_UseTool;
-    private readonly InputAction m_Board_MousePosition;
     private readonly InputAction m_Board_Undo;
     private readonly InputAction m_Board_Redo;
     private readonly InputAction m_Board_Grab;
@@ -403,10 +413,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Board/UseTool".
         /// </summary>
         public InputAction @UseTool => m_Wrapper.m_Board_UseTool;
-        /// <summary>
-        /// Provides access to the underlying input action "Board/MousePosition".
-        /// </summary>
-        public InputAction @MousePosition => m_Wrapper.m_Board_MousePosition;
         /// <summary>
         /// Provides access to the underlying input action "Board/Undo".
         /// </summary>
@@ -448,9 +454,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @UseTool.started += instance.OnUseTool;
             @UseTool.performed += instance.OnUseTool;
             @UseTool.canceled += instance.OnUseTool;
-            @MousePosition.started += instance.OnMousePosition;
-            @MousePosition.performed += instance.OnMousePosition;
-            @MousePosition.canceled += instance.OnMousePosition;
             @Undo.started += instance.OnUndo;
             @Undo.performed += instance.OnUndo;
             @Undo.canceled += instance.OnUndo;
@@ -474,9 +477,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @UseTool.started -= instance.OnUseTool;
             @UseTool.performed -= instance.OnUseTool;
             @UseTool.canceled -= instance.OnUseTool;
-            @MousePosition.started -= instance.OnMousePosition;
-            @MousePosition.performed -= instance.OnMousePosition;
-            @MousePosition.canceled -= instance.OnMousePosition;
             @Undo.started -= instance.OnUndo;
             @Undo.performed -= instance.OnUndo;
             @Undo.canceled -= instance.OnUndo;
@@ -615,6 +615,102 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PromptGeneratorActions" /> instance referencing this action map.
     /// </summary>
     public PromptGeneratorActions @PromptGenerator => new PromptGeneratorActions(this);
+
+    // AlwaysEnabled
+    private readonly InputActionMap m_AlwaysEnabled;
+    private List<IAlwaysEnabledActions> m_AlwaysEnabledActionsCallbackInterfaces = new List<IAlwaysEnabledActions>();
+    private readonly InputAction m_AlwaysEnabled_MousePosition;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "AlwaysEnabled".
+    /// </summary>
+    public struct AlwaysEnabledActions
+    {
+        private @PlayerInputActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public AlwaysEnabledActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "AlwaysEnabled/MousePosition".
+        /// </summary>
+        public InputAction @MousePosition => m_Wrapper.m_AlwaysEnabled_MousePosition;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_AlwaysEnabled; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="AlwaysEnabledActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(AlwaysEnabledActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="AlwaysEnabledActions" />
+        public void AddCallbacks(IAlwaysEnabledActions instance)
+        {
+            if (instance == null || m_Wrapper.m_AlwaysEnabledActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_AlwaysEnabledActionsCallbackInterfaces.Add(instance);
+            @MousePosition.started += instance.OnMousePosition;
+            @MousePosition.performed += instance.OnMousePosition;
+            @MousePosition.canceled += instance.OnMousePosition;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="AlwaysEnabledActions" />
+        private void UnregisterCallbacks(IAlwaysEnabledActions instance)
+        {
+            @MousePosition.started -= instance.OnMousePosition;
+            @MousePosition.performed -= instance.OnMousePosition;
+            @MousePosition.canceled -= instance.OnMousePosition;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="AlwaysEnabledActions.UnregisterCallbacks(IAlwaysEnabledActions)" />.
+        /// </summary>
+        /// <seealso cref="AlwaysEnabledActions.UnregisterCallbacks(IAlwaysEnabledActions)" />
+        public void RemoveCallbacks(IAlwaysEnabledActions instance)
+        {
+            if (m_Wrapper.m_AlwaysEnabledActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="AlwaysEnabledActions.AddCallbacks(IAlwaysEnabledActions)" />
+        /// <seealso cref="AlwaysEnabledActions.RemoveCallbacks(IAlwaysEnabledActions)" />
+        /// <seealso cref="AlwaysEnabledActions.UnregisterCallbacks(IAlwaysEnabledActions)" />
+        public void SetCallbacks(IAlwaysEnabledActions instance)
+        {
+            foreach (var item in m_Wrapper.m_AlwaysEnabledActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_AlwaysEnabledActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="AlwaysEnabledActions" /> instance referencing this action map.
+    /// </summary>
+    public AlwaysEnabledActions @AlwaysEnabled => new AlwaysEnabledActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Board" which allows adding and removing callbacks.
     /// </summary>
@@ -629,13 +725,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnUseTool(InputAction.CallbackContext context);
-        /// <summary>
-        /// Method invoked when associated input action "MousePosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnMousePosition(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "Undo" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
@@ -672,5 +761,20 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnReRoll(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "AlwaysEnabled" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="AlwaysEnabledActions.AddCallbacks(IAlwaysEnabledActions)" />
+    /// <seealso cref="AlwaysEnabledActions.RemoveCallbacks(IAlwaysEnabledActions)" />
+    public interface IAlwaysEnabledActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "MousePosition" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnMousePosition(InputAction.CallbackContext context);
     }
 }
