@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using FishNet.Object;
 
-public class PromptPhaseHandler : PhaseHandler
+public class PromptInputPhaseHandler : PhaseHandler
 {
     public HashSet<string> tags = new HashSet<string>();
 
@@ -17,7 +17,7 @@ public class PromptPhaseHandler : PhaseHandler
     [ObserversRpc]
     public void UpdateTagsClient(List<string> newTags)
     {
-        //tags = newTags.to;
+        tags = new HashSet<string>(newTags);
     }
 
     [ServerRpc(RequireOwnership = false)]
@@ -25,9 +25,13 @@ public class PromptPhaseHandler : PhaseHandler
     {
         if (tags.Contains(tag))
         {
-            bool aFormatIsFulfilled = GamePhaseManager.instance.gameDataHolder.AddPromptInput(tag, input);
 
-            if (aFormatIsFulfilled && phaseTimer.Paused)        // returns true if the added input makes a format fulfilled meaning we can start the countdown to next phase
+            bool aFormatIsFulfilled = GamePhaseManager.instance.gameDataHolder.AddPromptInput(tag, input);
+            
+            bool phaseTimerStarted = phaseTimer.Elapsed != phaseTimer.Duration;
+            
+            Debug.Log(phaseTimerStarted);
+            if (aFormatIsFulfilled && !phaseTimerStarted)        // returns true if the added input makes a format fulfilled meaning we can start the countdown to next phase
             {
                 StartPhaseTimer();
             }

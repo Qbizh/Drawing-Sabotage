@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 
-public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions
+public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, PlayerInputActions.IPromptGeneratorActions
 {
     [SerializeField] CursorController cursorController;
 
@@ -20,10 +20,69 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions
         }
 
         playerInput = new PlayerInputActions();
+
         playerInput.Board.AddCallbacks(this);
-        playerInput.Board.Enable();
+        playerInput.PromptGenerator.AddCallbacks(this);
+
+        PhaseHandler.phaseStart += OnPhaseStart;
     }
 
+    private void SwitchActionMap(InputActionMap map)
+    {
+        Debug.Log("ENABLING MAP");
+
+        foreach (var actionMap in playerInput.asset.actionMaps)
+        {
+            if (actionMap != map)
+            {
+                actionMap.Disable();
+            } else
+            {
+                Debug.Log(map);
+                actionMap.Enable();
+            }
+        }
+    }
+
+    private void OnPhaseStart(bool asServer)
+    {
+        if (asServer) return;
+
+        var gamePhase = GamePhaseManager.instance.gamePhase.Value;
+
+        switch (gamePhase) 
+        {
+            case GamePhaseManager.GamePhase.PromptInput:
+                
+                break;
+            case GamePhaseManager.GamePhase.PromptGeneration:
+                SwitchActionMap(playerInput.PromptGenerator);
+
+                break;
+            case GamePhaseManager.GamePhase.Drawing:
+                SwitchActionMap(playerInput.Board);
+
+                break;
+            case GamePhaseManager.GamePhase.Voting:
+
+                break;
+        }
+    }
+
+
+    // Prompt Generating Phase
+    public event Action onReRoll;
+
+    public void OnReRoll(InputAction.CallbackContext ctx)
+    {
+        if (ctx.phase == InputActionPhase.Performed)
+        {
+            Debug.Log("input reroll");
+            onReRoll?.Invoke();
+        }
+    }
+
+    // Drawing Phase
 
     public event Action onUseTool;
     public event Action <Vector2> onMouseMove;
@@ -69,8 +128,6 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions
             onGrab?.Invoke();
         }
     }
-
-
 
     public bool UseToolDown()
     {

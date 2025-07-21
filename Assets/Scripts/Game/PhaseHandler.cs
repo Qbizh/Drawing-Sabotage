@@ -15,11 +15,25 @@ public class PhaseHandler : NetworkBehaviour
 
     public readonly SyncTimer phaseTimer = new SyncTimer();     // timer that triggers phase end on finish
 
+    private void OnEnable()
+    {
+        if (timerDisplay != null) 
+        {
+            timerDisplay.gameObject.SetActive(false);
+        }
+    }
 
     private void OnDisable()
     {
         phaseActive = false;
         phaseTimer.OnChange -= OnTimerChanged;
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+
+        gameObject.SetActive(false);
     }
 
     [Server]
