@@ -11,6 +11,11 @@ public class PhaseHandler : NetworkBehaviour
     public float phaseTime = 15;
 
     public static event Action<bool> phaseStart;
+    public static event Action<bool> phaseSetUp;
+
+    public static event Action<bool> phaseTimerStart;
+    public static event Action<bool> phaseTimerFinished;
+
     public static bool phaseActive = false;
 
     public readonly SyncTimer phaseTimer = new SyncTimer();     // timer that triggers phase end on finish
@@ -44,6 +49,19 @@ public class PhaseHandler : NetworkBehaviour
     }
 
     [Server]
+    public virtual void SetUpPhase()
+    {
+        phaseSetUp?.Invoke(true);
+        SetUpPhaseClient();
+    }
+
+    [ObserversRpc]
+    private void SetUpPhaseClient()
+    {
+        phaseSetUp?.Invoke(false);
+    }
+
+    [Server]
     public virtual void StartPhase()
     {
         phaseTimer.OnChange += OnTimerChanged;
@@ -64,8 +82,10 @@ public class PhaseHandler : NetworkBehaviour
     [Server]
     public void StartPhaseTimer()
     {
-        timerDisplay.gameObject.SetActive(true);
+        timerDisplay?.gameObject.SetActive(true);
         phaseTimer.StartTimer(phaseTime);
+
+        phaseTimerStart?.Invoke(true);
 
         ShowPhaseTimerClient();
     }
@@ -73,27 +93,38 @@ public class PhaseHandler : NetworkBehaviour
     [ObserversRpc]
     public void ShowPhaseTimerClient()
     {
-        timerDisplay.gameObject.SetActive(true);
+        timerDisplay?.gameObject.SetActive(true);
+        phaseTimerStart?.Invoke(false);
     }
 
     private void OnTimerChanged(SyncTimerOperation op, float last, float next, bool asServer)
     {
-        if (asServer && op == SyncTimerOperation.Finished)
+        if (op == SyncTimerOperation.Finished)
         {
-            GamePhaseManager.instance.EndPhase();
+            phaseTimerFinished?.Invoke(asServer);
+
+            timerDisplay?.gameObject.SetActive(false);
+
+            if (asServer)
+            {
+                GamePhaseManager.instance.EndPhase();
+            }
         }
     }
 
     private void Update()
     {
-        if (timerDisplay != null && !phaseTimer.Paused)
+        if (!phaseTimer.Paused)
         {
             phaseTimer.Update();
 
-            TimeSpan time = TimeSpan.FromSeconds(phaseTimer.Remaining);
-            string display = time.ToString("m\\:ss");
+            if (timerDisplay != null)
+            {
+                TimeSpan time = TimeSpan.FromSeconds(phaseTimer.Remaining);
+                string display = time.ToString("m\\:ss");
 
-            timerDisplay.text = display;
+                timerDisplay.text = display;
+            }
         }
     }
 }
