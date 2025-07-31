@@ -2,24 +2,31 @@ using TMPro;
 using UnityEngine;
 using System.Collections.Generic;
 using FishNet;
-using System.Linq;
-using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class InputDisplayPanel : MonoBehaviour
 {
+    [SerializeField] private GameObject scrollingList;
+    Image backgroundImage;
+
     Animator scrollAnimator;
     TMP_Text[] inputTexts;
 
     private string tag;
     private string input;
 
-    public bool doneAnimation = true;
+    public bool doneAnimation = false;
 
     private void Awake()
     {
         scrollAnimator = GetComponentInChildren<Animator>();
 
         inputTexts = scrollAnimator.gameObject.GetComponentsInChildren<TMP_Text>();
+
+        backgroundImage = GetComponent<Image>();
+
+        scrollingList.SetActive(false);
+        backgroundImage.enabled = false;
     }
 
     public void Setup(string newTag, string newInput)
@@ -31,7 +38,7 @@ public class InputDisplayPanel : MonoBehaviour
         GamePhaseManager.instance.gameDataHolder.RequestPromptInputs(InstanceFinder.ClientManager.Connection);
     }
 
-    public void StartAnimation()
+    private void StartAnimation()
     {
         doneAnimation = false;
         scrollAnimator.SetTrigger("Scroll");
@@ -67,5 +74,11 @@ public class InputDisplayPanel : MonoBehaviour
             }
         }
 
+        backgroundImage.color = Color.HSVToRGB(Random.Range(0f, 1f), 0.57f, 0.75f);
+
+        scrollingList.SetActive(true);
+        backgroundImage.enabled = true;
+
+        Invoke("StartAnimation", Random.Range(0f, 0.8f));
     }
 }

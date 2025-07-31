@@ -9,7 +9,7 @@ public class GamePlayer : NetworkBehaviour
 
         if (!IsOwner)
         {
-            PipesManager.instance.AddPlayerPipe(base.Owner);
+            PipesManager.instance.AddPlayerPipe(Owner, PlayerDataHolder.instance.playerData);
         }
     }
 }

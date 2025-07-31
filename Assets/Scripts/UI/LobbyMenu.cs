@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using FishNet.Object.Synchronizing;
-using FishNet.Object;
+using FishNet.Connection;
 
 public class LobbyMenu : MonoBehaviour
 {
@@ -94,17 +94,17 @@ public class LobbyMenu : MonoBehaviour
         playerCards[data.index] = null;
     }
 
-    private void OnPlayersChanged(SyncListOperation op, int index, PlayerData oldItem, PlayerData newItem, bool asServer)
+    private void OnPlayersChanged(SyncDictionaryOperation op, NetworkConnection key, PlayerData value, bool asServer)
     {
         if (!asServer)
         {
-            if (op == SyncListOperation.Add)
+            if (op == SyncDictionaryOperation.Add)
             {
-                AddPlayerCard(newItem);
+                AddPlayerCard(value);
             }
-            else if (op == SyncListOperation.RemoveAt)
+            else if (op == SyncDictionaryOperation.Remove)
             {
-                RemovePlayerCard(oldItem);
+                RemovePlayerCard(value);
             }
         }
     }

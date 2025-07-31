@@ -8,13 +8,13 @@ public class PromptInputPhaseHandler : PhaseHandler
     public HashSet<string> tags = new HashSet<string>();
 
     [Server]
-    public override void StartPhase()
+    public override void SetUpPhase()
     {
         tags = GamePhaseManager.instance.gameDataHolder.GetUnfulfilledFormatTags();
 
         UpdateTagsClient(tags.ToList());
 
-        base.StartPhase();  
+        base.SetUpPhase();  
     }
 
     [ObserversRpc]
@@ -33,7 +33,6 @@ public class PromptInputPhaseHandler : PhaseHandler
             
             bool phaseTimerStarted = phaseTimer.Elapsed != phaseTimer.Duration;
             
-            Debug.Log(phaseTimerStarted);
             if (aFormatIsFulfilled && !phaseTimerStarted)        // returns true if the added input makes a format fulfilled meaning we can start the countdown to next phase
             {
                 StartPhaseTimer();

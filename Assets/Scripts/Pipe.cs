@@ -13,10 +13,10 @@ public class Pipe : MonoBehaviour
 
     NetworkConnection client;
 
-    public void SetPlayer(NetworkConnection id)
+    public void SetPlayer(NetworkConnection conn, PlayerData data)
     {
-        client = id;
-        IdDisplay.text = id.ToString();
+        client = conn;
+        IdDisplay.text = data.name;
     }
 
     public void Disable()

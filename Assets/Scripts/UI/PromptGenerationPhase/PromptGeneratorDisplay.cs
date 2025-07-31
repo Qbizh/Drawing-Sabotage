@@ -10,6 +10,7 @@ using WebSocketSharp;
 
 public class PromptGeneratorDisplay : NetworkBehaviour
 {
+    [SerializeField] PromptGenerationPhaseHandler phaseHandler; 
 
     [SerializeField] GameObject promptLinePrefab;
     [SerializeField] GameObject inputPanelPrefab;
@@ -17,7 +18,9 @@ public class PromptGeneratorDisplay : NetworkBehaviour
 
     Dictionary<GameObject, List<GameObject>> promptLines = new Dictionary<GameObject, List<GameObject>>();
 
-    int maxLineLength = 3;
+    int maxLineLength = 4;
+
+    bool generationActive = false;
 
     private void OnEnable()
     {
@@ -27,17 +30,26 @@ public class PromptGeneratorDisplay : NetworkBehaviour
     private void OnDisable()
     {
         PhaseHandler.phaseStart -= OnPhaseStart;
+        PhaseHandler.phaseTimerStart -= OnPhaseTimerStart;
         InputManager.instance.onReRoll -= OnReRoll;
     }
 
     private void OnPhaseStart(bool asServer)
     {
+        generationActive = true;
+
         if (asServer)
         {
             InputManager.instance.onReRoll += OnReRoll;
+            PhaseHandler.phaseTimerStart += OnPhaseTimerStart;
 
             GeneratePrompt();
         }
+    }
+
+    private void OnPhaseTimerStart(bool asServer)
+    {
+        generationActive = false;
     }
 
     private void OnPromptDataChanged(GameDataHolder.PromptData old, GameDataHolder.PromptData next, bool asServer)
@@ -51,7 +63,7 @@ public class PromptGeneratorDisplay : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void GeneratePrompt()
     {
-        GameDataHolder.PromptData promptData = GamePhaseManager.instance.gameDataHolder.GeneratePrompt();
+        var promptData = phaseHandler.GeneratePrompt();
 
         SetUpPromptDisplay(promptData);
     }
@@ -78,6 +90,10 @@ public class PromptGeneratorDisplay : NetworkBehaviour
 
             if (currentLine == null || promptLines[currentLine].Count >= maxLineLength)
             {
+                if (currentLine != null)
+                {
+                    Debug.Log(promptLines[currentLine].Count);
+                }
                 currentLine = Instantiate(promptLinePrefab, transform);
                 promptLines.Add(currentLine, new List<GameObject>());
             }
@@ -89,9 +105,6 @@ public class PromptGeneratorDisplay : NetworkBehaviour
                 
                 obj = Instantiate(inputPanelPrefab, currentLine.transform);
                 obj.GetComponent<InputDisplayPanel>().Setup(str, promptData.inputs[tagIndex]);
-                obj.GetComponent<InputDisplayPanel>().StartAnimation();
-
-                promptLines[currentLine].Add(gameObject);
 
                 tagIndex++;
             } else
@@ -131,15 +144,10 @@ public class PromptGeneratorDisplay : NetworkBehaviour
                 }
             }
 
-            if (ready)
+            if (ready && generationActive)
             {
                 GeneratePrompt();
             }
         }
-    }
-
-    private bool IsGenerationAnimationDone()
-    {
-        return false;
     }
 }

@@ -43,24 +43,24 @@ public class PipesManager : NetworkBehaviour
     {
         if (!asServer)
         {
-            foreach (var client in InstanceFinder.ClientManager.Clients)
+            foreach (var client in LobbyManager.instance.players)
             {
-                if (client.Value != InstanceFinder.ClientManager.Connection)
+                if (client.Key != InstanceFinder.ClientManager.Connection)
                 {
-                    AddPlayerPipe(client.Value);
+                    AddPlayerPipe(client.Key, client.Value);
                 }
             }
         }
     }
 
-    public void AddPlayerPipe(NetworkConnection client)
+    public void AddPlayerPipe(NetworkConnection conn, PlayerData data)
     {
         for (int i = 0; i < pipes.Length; i++)
         {
             if (!pipes[i].activeInHierarchy)
             {
                 pipes[i].gameObject.SetActive(true);
-                pipes[i].GetComponent<Pipe>().SetPlayer(client);
+                pipes[i].GetComponent<Pipe>().SetPlayer(conn, data);
 
                 break;
             }

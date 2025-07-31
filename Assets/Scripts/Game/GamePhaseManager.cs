@@ -104,6 +104,9 @@ public class GamePhaseManager : NetworkBehaviour
 
 
         scenesAnimator.SetTrigger("FirstLoad");
+        scenesAnimator.speed = 0;
+
+        ClientChangedPhase(PlayerDataHolder.instance.playerData, true);
     }
 
     [Server]
@@ -124,6 +127,8 @@ public class GamePhaseManager : NetworkBehaviour
     {
         lastGamePhase.Value = gamePhase.Value;
         gamePhase.Value = newState;
+
+        Debug.Log("Transitioning to " + gamePhase.Value);
 
         StartClientLoad();
     }
@@ -173,13 +178,13 @@ public class GamePhaseManager : NetworkBehaviour
 
             currentPhaseHandler.gameObject.SetActive(true);
 
-            ContinueClientLoad();
+            ChangeCurrentPhase();
         }
     }
 
 
     [ObserversRpc]
-    private void ContinueClientLoad()
+    private void ChangeCurrentPhase()
     {
         if (currentPhaseHandler != null)
         {
@@ -190,6 +195,22 @@ public class GamePhaseManager : NetworkBehaviour
 
         currentPhaseHandler.gameObject.SetActive(true);
 
+        ClientChangedPhase(PlayerDataHolder.instance.playerData, false);
+    }
+
+    [ServerRpc(RequireOwnership =false)]
+    private void ClientChangedPhase(PlayerData player, bool firstRound)
+    {
+        if (AllClientsLoaded(player))
+        {
+            currentPhaseHandler.SetUpPhase();
+            ContinueClientLoad();
+        }
+    }
+
+    [ObserversRpc]
+    private void ContinueClientLoad()
+    {
         scenesAnimator.speed = 1;
     }
 

@@ -3,8 +3,6 @@ using FishNet.Managing.Scened;
 using FishNet.Object;
 using FishNet.Object.Synchronizing;
 using System;
-using System.Collections;
-using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Collections.Generic;
 using FishNet.Connection;
@@ -13,7 +11,7 @@ public class LobbyManager : NetworkBehaviour
 {
     public static LobbyManager instance;
 
-    public readonly SyncList<PlayerData> players = new SyncList<PlayerData>();
+    public readonly SyncDictionary<NetworkConnection, PlayerData> players = new SyncDictionary<NetworkConnection, PlayerData>();
 
     [SerializeField] LobbyMenu lobbyMenu;
 
@@ -47,7 +45,7 @@ public class LobbyManager : NetworkBehaviour
         base.OnStartClient();
 
         PlayerDataHolder.instance.playerData.index = players.Count;
-        AddPlayerData(PlayerDataHolder.instance.playerData);
+        AddPlayerData(InstanceFinder.ClientManager.Connection, PlayerDataHolder.instance.playerData);
 
         lobbyManagerSpawned?.Invoke();
     }
@@ -77,14 +75,14 @@ public class LobbyManager : NetworkBehaviour
 
 
     [ServerRpc(RequireOwnership =false)] 
-    private void AddPlayerData(PlayerData data) // def revisit this
+    private void AddPlayerData(NetworkConnection conn, PlayerData data) // def revisit this
     {
-        players.Add(data);
+        players.Add(conn, data);
     }
 
     [Server]
-    private void RemovePlayerData(PlayerData data)
+    private void RemovePlayerData(NetworkConnection conn, PlayerData data)
     {
-        players.RemoveAt(data.index);
+        players.Remove(conn);
     }
 }

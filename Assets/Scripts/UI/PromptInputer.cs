@@ -17,15 +17,15 @@ public class PromptInputer : MonoBehaviour
 
     private void OnEnable()
     {
-        PhaseHandler.phaseStart += OnPhaseStart;
+        PhaseHandler.phaseSetUp += OnPhaseSetUp;
     }
 
     private void OnDisable()
     {
-        PhaseHandler.phaseStart -= OnPhaseStart;
+        PhaseHandler.phaseSetUp -= OnPhaseSetUp;
     }
 
-    private void OnPhaseStart(bool asServer)
+    private void OnPhaseSetUp(bool asServer)
     {
         if (!asServer)
         {
@@ -50,7 +50,7 @@ public class PromptInputer : MonoBehaviour
         tag = tag.Remove(0, 1);
         tag = tag.Remove(tag.Length - 1, 1);
 
-        tagDisplay.text = tag;     // remove brackets
+        tagDisplay.text = tag;
 
     }
 
@@ -58,7 +58,7 @@ public class PromptInputer : MonoBehaviour
     {
         string promptInput = promptInputField.text;
 
-        if (!string.IsNullOrEmpty(promptInput)) 
+        if (PhaseHandler.phaseActive && !string.IsNullOrEmpty(promptInput)) 
         {
 
             promptInputField.text = "";

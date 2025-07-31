@@ -15,6 +15,7 @@ public class GameDataHolder : NetworkBehaviour
     List<string> fulfilledFormats = new List<string>();
 
     public readonly SyncVar<string> currentPrompt = new SyncVar<string>();
+    public readonly SyncDictionary<NetworkConnection, byte[]> playerDrawings = new SyncDictionary<NetworkConnection, byte[]>();
 
     Dictionary<string, List<string>> promptInputs = new Dictionary<string, List<string>>();
     public event Action<Dictionary<string, List<string>>> promptInputsRecieved;
@@ -141,7 +142,6 @@ public class GameDataHolder : NetworkBehaviour
             }
         }
 
-        //currentPrompt.Value = prompt;
         promptData.prompt = prompt;
         promptData.inputs = usedInputs;
         promptData.tags = usedTags;
@@ -184,6 +184,17 @@ public class GameDataHolder : NetworkBehaviour
     private void RecievePromptInputs(NetworkConnection conn, Dictionary<string, List<string>> inputs)
     {
         promptInputsRecieved?.Invoke(inputs);
+    }
+
+    [Server]
+    public void SetPlayerDrawings(Dictionary<NetworkConnection, byte[]> drawings)
+    {
+        playerDrawings.Clear();
+        
+        foreach (var kvp in drawings)
+        {
+            playerDrawings.Add(kvp.Key, kvp.Value);
+        }
     }
 
 }
