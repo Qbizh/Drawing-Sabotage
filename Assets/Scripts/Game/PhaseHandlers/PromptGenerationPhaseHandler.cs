@@ -56,4 +56,16 @@ public class PromptGenerationPhaseHandler : PhaseHandler
             hostUI.SetActive(hideForHost ? false : true);
         }
     }
+
+    public override void SkipPhase()
+    {
+        if (!string.IsNullOrEmpty(currentPromptData.prompt))
+        {
+            GamePhaseManager.instance.gameDataHolder.SetPrompt(currentPromptData);
+
+            HideHostUI(true);
+        }
+
+        base.SkipPhase();
+    }
 }

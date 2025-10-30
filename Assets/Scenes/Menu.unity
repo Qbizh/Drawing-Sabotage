@@ -1426,11 +1426,6 @@ MonoBehaviour:
   name: ironbagles574
   deck:
   - {fileID: 11400000, guid: 464d5ae02f1b5744f953f658eae53f2e, type: 2}
-  - {fileID: 11400000, guid: 236abadaa3271fc4db3dc468f216ac46, type: 2}
-  - {fileID: 11400000, guid: 464d5ae02f1b5744f953f658eae53f2e, type: 2}
-  - {fileID: 11400000, guid: 236abadaa3271fc4db3dc468f216ac46, type: 2}
-  - {fileID: 11400000, guid: 464d5ae02f1b5744f953f658eae53f2e, type: 2}
-  - {fileID: 11400000, guid: 236abadaa3271fc4db3dc468f216ac46, type: 2}
   cardDatabase: {fileID: 11400000, guid: 7beaa39f3240f6546b6ef588ed9e09b4, type: 2}
 --- !u!4 &1112352501
 Transform:

@@ -227,4 +227,12 @@ public class GamePhaseManager : NetworkBehaviour
             currentPhaseHandler.StartPhase();
         }
     }
+
+    public void OnSkipPhase()
+    {
+        if (IsHostInitialized)
+        {
+            currentPhaseHandler.SkipPhase();
+        }
+    }
 }

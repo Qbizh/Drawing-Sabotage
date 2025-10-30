@@ -14,7 +14,7 @@ public class PhaseHandler : NetworkBehaviour
     public static event Action<bool> phaseSetUp;
 
     public static event Action<bool> phaseTimerStart;
-    public static event Action<bool> phaseTimerFinished;
+    public static event Action phaseTimerFinished;
 
     public static bool phaseActive = false;
 
@@ -97,22 +97,38 @@ public class PhaseHandler : NetworkBehaviour
         phaseTimerStart?.Invoke(false);
     }
 
+    [Server]
+    public virtual void SkipPhase()
+    {
+        phaseTimerFinished?.Invoke();
+
+        timerDisplay?.gameObject.SetActive(false);
+
+        SkipPhaseClient();
+
+        GamePhaseManager.instance.EndPhase();
+    }
+
+    [ObserversRpc]
+    private void SkipPhaseClient()
+    {
+        timerDisplay?.gameObject.SetActive(false);
+    }
+
+    [Server]
     private void OnTimerChanged(SyncTimerOperation op, float last, float next, bool asServer)
     {
-        if (op == SyncTimerOperation.Finished)
+        if (op == SyncTimerOperation.Finished && asServer)
         {
-            phaseTimerFinished?.Invoke(asServer);
+            phaseTimerFinished?.Invoke();
 
             timerDisplay?.gameObject.SetActive(false);
 
-            if (asServer)
-            {
-                GamePhaseManager.instance.EndPhase();
-            }
+            GamePhaseManager.instance.EndPhase();
         }
     }
 
-    private void Update()
+    public virtual void Update()
     {
         if (!phaseTimer.Paused)
         {
