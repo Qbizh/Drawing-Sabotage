@@ -39,4 +39,17 @@ public class PromptInputPhaseHandler : PhaseHandler
             }
         }
     }
+
+    public override void SkipPhase()
+    {
+        if (phaseTimer.Elapsed == phaseTimer.Duration)
+        {
+            foreach(string tag in tags)
+            {
+                GamePhaseManager.instance.gameDataHolder.AddPromptInput(tag, "DEBUG");
+            }
+        }
+
+        base.SkipPhase();
+    }
 }

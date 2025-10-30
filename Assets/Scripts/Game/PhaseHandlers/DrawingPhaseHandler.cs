@@ -20,25 +20,31 @@ public class DrawingPhaseHandler : PhaseHandler
         StartPhaseTimer();
     }
 
-    private void OnPhaseTimerFinished(bool asServer)
+    private void OnPhaseTimerFinished()
     {
         phaseTimerFinished -= OnPhaseTimerFinished;
 
-        if (!asServer)
-        {
-            var myDrawing = DrawingBoard.GetMainBoard().texture.EncodeToPNG();
-            AddDrawing(InstanceFinder.ClientManager.Connection, myDrawing);
-        }
+        CollectDrawings();
     }
 
-    [ServerRpc]
+    [ObserversRpc]
+    private void CollectDrawings()
+    {
+        Debug.Log("drawing added");
+        var myDrawing = DrawingBoard.GetMainBoard().texture.EncodeToPNG();
+        AddDrawing(InstanceFinder.ClientManager.Connection, myDrawing);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
     private void AddDrawing(NetworkConnection conn, byte[] drawing)
     {
+        
         if (playerDrawings.TryAdd(conn, drawing))
         {
             if (playerDrawings.Count == LobbyManager.instance.players.Count)
             {
                 GamePhaseManager.instance.gameDataHolder.SetPlayerDrawings(playerDrawings);
+                
             }
         }
     }
