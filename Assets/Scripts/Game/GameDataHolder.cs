@@ -20,6 +20,8 @@ public class GameDataHolder : NetworkBehaviour
     Dictionary<string, List<string>> promptInputs = new Dictionary<string, List<string>>();
     public event Action<Dictionary<string, List<string>>> promptInputsRecieved;
 
+    public readonly SyncDictionary<NetworkConnection, int> gameScores = new SyncDictionary<NetworkConnection, int>();
+
     public struct PromptData 
     { 
         public string prompt;
@@ -194,6 +196,29 @@ public class GameDataHolder : NetworkBehaviour
         foreach (var kvp in drawings)
         {
             playerDrawings.Add(kvp.Key, kvp.Value);
+        }
+    }
+
+    [Server]
+    public void AddRoundScores(Dictionary<NetworkConnection, int> scores)
+    {
+        foreach(var player in scores.Keys)
+        {
+            AddScore(player, scores[player]);
+        }
+    }
+
+    private void AddScore(NetworkConnection player, int add)
+    {
+        int currentScore;
+
+        if (gameScores.TryGetValue(player, out currentScore))
+        {
+            gameScores[player] = currentScore + add;
+        }
+        else
+        {
+            gameScores.Add(player, add);
         }
     }
 

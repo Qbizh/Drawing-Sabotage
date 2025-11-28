@@ -85,4 +85,9 @@ public class LobbyManager : NetworkBehaviour
     {
         players.Remove(conn);
     }
+
+    public PlayerData GetPlayerFromConnection(NetworkConnection conn)
+    {
+        return players[conn];
+    }
 }

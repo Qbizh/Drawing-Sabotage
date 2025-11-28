@@ -21,7 +21,7 @@ public class VotingButtons : MonoBehaviour
     {
         VoteType vote = (VoteType)voteIndex;
 
-        if (vote == VoteType.None)                  // meme buddy button
+        if (vote == VoteType.None)                  // invest button
         {
             invested = true;
             buttons[0].gameObject.SetActive(false);
@@ -47,6 +47,14 @@ public class VotingButtons : MonoBehaviour
         foreach (var button in buttons)
         {
             button.interactable = false;
+        }
+    }
+
+    public void HideButtons(bool hide)
+    {
+        foreach (var button in buttons)
+        {
+            button.gameObject.SetActive(hide);
         }
     }
 

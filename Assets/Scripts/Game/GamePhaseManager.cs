@@ -28,7 +28,8 @@ public class GamePhaseManager : NetworkBehaviour
         PromptInput,
         PromptGeneration,
         Drawing,
-        Voting
+        Voting,
+        Leaderboard
     }
 
     int roundAmount = 3;
@@ -112,7 +113,7 @@ public class GamePhaseManager : NetworkBehaviour
     [Server]
     public void EndPhase()
     {
-        if (gamePhase.Value == GamePhase.Voting)
+        if (gamePhase.Value == GamePhase.Leaderboard)
         {
             InitializeRound();
         }
@@ -127,8 +128,6 @@ public class GamePhaseManager : NetworkBehaviour
     {
         lastGamePhase.Value = gamePhase.Value;
         gamePhase.Value = newState;
-
-        Debug.Log("Transitioning to " + gamePhase.Value);
 
         StartClientLoad();
     }

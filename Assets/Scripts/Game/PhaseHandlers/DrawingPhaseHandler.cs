@@ -30,7 +30,6 @@ public class DrawingPhaseHandler : PhaseHandler
     [ObserversRpc]
     private void CollectDrawings()
     {
-        Debug.Log("drawing added");
         var myDrawing = DrawingBoard.GetMainBoard().texture.EncodeToPNG();
         AddDrawing(InstanceFinder.ClientManager.Connection, myDrawing);
     }

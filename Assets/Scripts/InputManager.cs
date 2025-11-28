@@ -32,7 +32,6 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, Pla
 
     private void SwitchActionMap(InputActionMap map)
     {
-        Debug.Log("ENABLING MAP");
 
         foreach (var actionMap in playerInput.asset.actionMaps)
         {
@@ -41,7 +40,6 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, Pla
                 actionMap.Disable();
             } else if (actionMap == map) 
             {
-                Debug.Log(map);
                 actionMap.Enable();
             }
         }

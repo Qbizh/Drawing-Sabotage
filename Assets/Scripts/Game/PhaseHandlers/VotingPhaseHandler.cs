@@ -9,6 +9,7 @@ public class VotingPhaseHandler : PhaseHandler
     [SerializeField] VotingManager votingManager;
 
     Dictionary<NetworkConnection, Dictionary<NetworkConnection, (VoteType, bool)>> allVotes = new Dictionary<NetworkConnection, Dictionary<NetworkConnection, (VoteType, bool)>>();
+    Dictionary<NetworkConnection, int> roundScores = new Dictionary<NetworkConnection, int>();
 
     public NetworkConnection currentPlayer;
 
@@ -51,7 +52,74 @@ public class VotingPhaseHandler : PhaseHandler
             votingTimer.OnChange += OnVoteTimerChanged;
         } else
         {
-            Debug.Log("EVERYTHING WAS VOTED ON");
+            ScoreVotes();
+        }
+    }
+
+    [Server]
+    private void ScoreVotes()
+    {
+        Debug.Log(allVotes.Count);
+
+        foreach (var player in allVotes.Keys)
+        {
+            var votes = allVotes[player];
+
+            int score = 0;
+
+            List<NetworkConnection> investedVoters = new List<NetworkConnection>();
+
+            foreach (var voter in votes.Keys)
+            {
+                var vote = votes[voter];
+
+                switch (vote.Item1) 
+                {
+                    case VoteType.Up:
+                        score += VotingConstants.upVoteScore;
+                        break;
+                    case VoteType.Down:
+                        score += VotingConstants.downVoteScore;
+                        break;
+                    case VoteType.Meh:
+                        score += VotingConstants.mehVoteScore;
+                        break;
+                }
+
+                if (vote.Item2)
+                {
+                    investedVoters.Add(voter);
+                }
+            }
+
+            foreach (var voter in investedVoters)
+            {
+                int investmentReturn = Mathf.RoundToInt(score * VotingConstants.investmentReturnPercentage);
+
+                AddScore(voter, investmentReturn);
+            }
+
+            AddScore(player, score);
+        }
+
+        votingManager.DisplayResults(roundScores);
+
+        GamePhaseManager.instance.gameDataHolder.AddRoundScores(roundScores);
+
+        StartPhaseTimer();
+    } 
+
+    private void AddScore(NetworkConnection player, int add)
+    {
+        int currentScore;
+
+        if (roundScores.TryGetValue(player, out currentScore))
+        {
+            roundScores[player] = currentScore + add;
+        }
+        else
+        {
+            roundScores.Add(player, add);
         }
     }
 
@@ -68,6 +136,7 @@ public class VotingPhaseHandler : PhaseHandler
     [Server]
     public void SetVotes(Dictionary<NetworkConnection, (VoteType, bool)> roundVotes)
     {
+
         if (allVotes.TryAdd(currentPlayer, roundVotes))
         {
             SetUpNextVote();
@@ -84,14 +153,6 @@ public class VotingPhaseHandler : PhaseHandler
         if (!votingTimer.Paused)
         {
             votingTimer.Update();
-
-            /*if (timerDisplay != null)
-            {
-                TimeSpan time = TimeSpan.FromSeconds(phaseTimer.Remaining);
-                string display = time.ToString("m\\:ss");
-
-                timerDisplay.text = display;
-            }*/
         }
     }
 }
