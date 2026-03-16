@@ -30,7 +30,7 @@ public class PromptInputer : MonoBehaviour
         if (!asServer)
         {
             tagsQueue = new Queue<string>(promptPhaseHandler.tags);
-
+            Debug.Log(tagsQueue.Count);
             foreach (string tag in tagsQueue)
             {
                 tagColors[tag] = Color.HSVToRGB(Random.Range(0f, 1f), 0.57f, 0.75f);

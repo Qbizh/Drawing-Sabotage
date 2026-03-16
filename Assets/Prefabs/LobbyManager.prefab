@@ -79,9 +79,11 @@ MonoBehaviour:
   _initializeOrder: 0
   _preventDespawnOnDisconnect: 0
   _defaultDespawnType: 0
+  _initializedTimestamp: -8584279036722982971
   NetworkObserver: {fileID: 0}
   _enablePrediction: 0
   _predictionType: 0
+  _localReconcileCorrectionType: 2
   _graphicalObject: {fileID: 0}
   _detachGraphicalObject: 0
   _enableStateForwarding: 1
@@ -93,10 +95,10 @@ MonoBehaviour:
   _spectatorInterpolation: 2
   _enableTeleport: 0
   _teleportThreshold: 1
-  <PrefabId>k__BackingField: 10
+  <PrefabId>k__BackingField: 0
   <SpawnableCollectionId>k__BackingField: 0
-  <AssetPathHash>k__BackingField: 13993801302970289841
-  <SceneId>k__BackingField: 0
+  <AssetPathHash>k__BackingField: 1673225785020036437
+  SceneId: 0
   SerializedTransformProperties:
     Position: {x: 1257.125, y: 404.57727, z: -6.5734234}
     Rotation: {x: -0, y: -0, z: -0, w: 1}
