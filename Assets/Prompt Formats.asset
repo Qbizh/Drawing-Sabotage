@@ -16,3 +16,5 @@ MonoBehaviour:
   - '[Name or Character] [Verb ending in ing] behind a/an [Location]'
   - '[Name or Character] [Verb ending in ing] a [Noun]'
   - "[Name or Character]\u2019s [Adjective] [Noun]"
+  - '[Name or Character] [Verb ending in ing] a [Noun] with a [Noun]'
+  - '[Name or Character] [Adverb] [Verb ending in ing] a [Noun]'

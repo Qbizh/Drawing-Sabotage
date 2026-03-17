@@ -8,8 +8,6 @@ public class PlayerDataHolder : MonoBehaviour
 
     [SerializeField] private string name;
 
-    [SerializeField] private List<CardData> deck;
-
 
     [SerializeField] CardDatabase cardDatabase;
 
@@ -31,6 +29,6 @@ public class PlayerDataHolder : MonoBehaviour
         name = CurrentPlayer.ReadOnlyTags()[0];
 #endif
 
-        playerData = new PlayerData(name, cardDatabase.GetDeckIds(deck));
+        playerData = new PlayerData(name);
     }
 }

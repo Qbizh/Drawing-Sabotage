@@ -32,7 +32,7 @@ public class CardBoard : DrawingBoard
         base.OnEnable();
         textureChanged += UpdateScore;
 
-        CardsManager.onCardDraw += DrawCard;
+        ItemsManager.onItemDraw += DrawCard;
     }
 
     private new void OnDisable()
@@ -44,7 +44,7 @@ public class CardBoard : DrawingBoard
 
         textureChanged -= UpdateScore;
 
-        CardsManager.onCardDraw -= DrawCard;
+        ItemsManager.onItemDraw -= DrawCard;
     }
 
     private void DrawCard()
@@ -60,7 +60,7 @@ public class CardBoard : DrawingBoard
         newTexture.filterMode = FilterMode.Point;
         newTexture.wrapMode = TextureWrapMode.Clamp;
 
-        newTexture.CopyPixels(CardsManager.instance.GetCurrentCard().texture);
+        newTexture.CopyPixels(ItemsManager.instance.GetCurrentItem().texture);
         newTexture.Apply();
 
         var newSprite = Sprite.Create(newTexture, new Rect(0, 0, oldSprite.texture.width, oldSprite.texture.height), Vector2.one * 0.5f);
@@ -73,7 +73,7 @@ public class CardBoard : DrawingBoard
     {
         foregroundLength = 0;
 
-        var pixels = CardsManager.instance.GetCurrentCard().texture.GetPixels();
+        var pixels = ItemsManager.instance.GetCurrentItem().texture.GetPixels();
         foregroundMask = pixels.Select(c => {
             if (c.a > 0)
             {
@@ -86,10 +86,10 @@ public class CardBoard : DrawingBoard
 
     private void UpdateScore()
     {
-        if (CardsManager.instance.GetCurrentCard() == null) return;
+        if (ItemsManager.instance.GetCurrentItem() == null) return;
 
         var boardPixels = texture.GetPixels();
-        var cardPixels = CardsManager.instance.GetCurrentCard().texture.GetPixels();
+        var cardPixels = ItemsManager.instance.GetCurrentItem().texture.GetPixels();
 
         int correctForeground = 0;
         int incorrectBackground = 0;

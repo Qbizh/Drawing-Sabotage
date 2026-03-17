@@ -31,7 +31,7 @@ public class Pipe : MonoBehaviour
     {
         if (other.CompareTag("Card"))
         {
-            if (CardsManager.instance.SendCard(client))
+            if (ItemsManager.instance.SendItem(client))
             {
                 var initialDist = Vector2.Distance(entryPoint.position, other.transform.position);
                 var initialScale = other.transform.localScale;

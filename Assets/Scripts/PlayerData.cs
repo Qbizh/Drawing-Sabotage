@@ -5,14 +5,11 @@ public class PlayerData
 {
     public string name;
 
-    public int[] deck;
-
     public int index;
 
-    public PlayerData(string newName, int[] newDeck)
+    public PlayerData(string newName)
     {
         name = newName;
-        deck = newDeck;
     }
 
     public PlayerData() {}
