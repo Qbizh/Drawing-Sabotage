@@ -30,6 +30,11 @@ public class VotingManager : NetworkBehaviour
         PhaseHandler.phaseStart += OnPhaseStart;
     }
 
+    private void OnDisable()
+    {
+        PhaseHandler.phaseStart -= OnPhaseStart;
+    }
+
     private void OnPhaseStart(bool asServer)
     {
         if (GamePhaseManager.instance.gamePhase.Value == GamePhaseManager.GamePhase.Voting)
@@ -49,8 +54,7 @@ public class VotingManager : NetworkBehaviour
     {
         PhaseHandler.phaseTimerFinished -= OnPhaseEnd;
 
-        SetVotingEnabled(true);
-        HideResults();
+        ResetDisplay();  
     }
 
     [Server]
@@ -136,9 +140,13 @@ public class VotingManager : NetworkBehaviour
     }
 
     [ObserversRpc]
-    private void HideResults()
+    private void ResetDisplay()
     {
-        resultsGrid.SetActive(false);
+        SetVotingEnabled(true);
+
+        drawingDisplay.sprite = null;
+
+        resultsGrid.SetActive(false);   // hide results
 
         foreach (Transform resultsObj in resultsGrid.transform)
         {

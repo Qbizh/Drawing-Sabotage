@@ -90,10 +90,6 @@ public class PromptGeneratorDisplay : NetworkBehaviour
 
             if (currentLine == null || promptLines[currentLine].Count >= maxLineLength)
             {
-                if (currentLine != null)
-                {
-                    Debug.Log(promptLines[currentLine].Count);
-                }
                 currentLine = Instantiate(promptLinePrefab, transform);
                 promptLines.Add(currentLine, new List<GameObject>());
             }

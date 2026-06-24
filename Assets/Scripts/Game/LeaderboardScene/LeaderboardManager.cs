@@ -24,7 +24,7 @@ public class LeaderboardManager : NetworkBehaviour
         {
             foreach (Transform obj in leaderboard)
             {
-                Destroy(obj);
+                Destroy(obj.gameObject);
             }
 
             var players = LobbyManager.instance.players;

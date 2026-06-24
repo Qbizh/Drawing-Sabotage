@@ -102,6 +102,8 @@ public class PhaseHandler : NetworkBehaviour
     {
         phaseTimerFinished?.Invoke();
 
+        phaseTimer.StopTimer();
+
         timerDisplay?.gameObject.SetActive(false);
 
         SkipPhaseClient();

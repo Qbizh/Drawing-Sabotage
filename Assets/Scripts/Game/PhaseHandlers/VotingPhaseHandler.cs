@@ -59,8 +59,6 @@ public class VotingPhaseHandler : PhaseHandler
     [Server]
     private void ScoreVotes()
     {
-        Debug.Log(allVotes.Count);
-
         foreach (var player in allVotes.Keys)
         {
             var votes = allVotes[player];
@@ -102,6 +100,8 @@ public class VotingPhaseHandler : PhaseHandler
             AddScore(player, score);
         }
 
+        //Debug.Log("score: " + roundScores.Count + ", votes: " + allVotes.Count);
+
         votingManager.DisplayResults(roundScores);
 
         GamePhaseManager.instance.gameDataHolder.AddRoundScores(roundScores);
@@ -131,6 +131,13 @@ public class VotingPhaseHandler : PhaseHandler
 
             votingManager.RequestVotes();
         }
+    }
+
+    public override void SkipPhase()
+    {
+        votingTimer.StopTimer();
+
+        base.SkipPhase();
     }
 
     [Server]

@@ -115,6 +115,8 @@ public class GamePhaseManager : NetworkBehaviour
     {
         if (gamePhase.Value == GamePhase.Leaderboard)
         {
+            Debug.Log(gamePhase.Value);
+
             InitializeRound();
         }
         else
