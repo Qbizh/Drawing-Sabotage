@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System;
 
-public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, PlayerInputActions.IPromptGeneratorActions, PlayerInputActions.IAlwaysEnabledActions
+public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, PlayerInputActions.IPromptGeneratorActions, PlayerInputActions.IItemPickingActions, PlayerInputActions.IAlwaysEnabledActions
 {
     [SerializeField] CursorController cursorController;
 
@@ -23,6 +23,7 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, Pla
 
         playerInput.Board.AddCallbacks(this);
         playerInput.PromptGenerator.AddCallbacks(this);
+        playerInput.ItemPicking.AddCallbacks(this);
         playerInput.AlwaysEnabled.AddCallbacks(this);
 
         playerInput.AlwaysEnabled.Enable();
@@ -60,6 +61,10 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, Pla
                 SwitchActionMap(playerInput.PromptGenerator);
 
                 break;
+            case GamePhaseManager.GamePhase.ItemPicking:
+                SwitchActionMap(playerInput.ItemPicking);
+
+                break;
             case GamePhaseManager.GamePhase.Drawing:
                 SwitchActionMap(playerInput.Board);
 
@@ -87,10 +92,31 @@ public class InputManager : MonoBehaviour, PlayerInputActions.IBoardActions, Pla
     {
         if (ctx.phase == InputActionPhase.Performed)
         {
-            Debug.Log("input reroll");
             onReRoll?.Invoke();
         }
     }
+
+    // Item Picking Phase
+
+    public event Action onPickup;
+    public event Action onJump;
+
+    public void OnPickup(InputAction.CallbackContext ctx)
+    {
+        if (ctx.phase == InputActionPhase.Performed)
+        {
+            onPickup?.Invoke();
+        }
+    }
+
+    public void OnJump(InputAction.CallbackContext ctx)
+    {
+        if (ctx.phase == InputActionPhase.Performed)
+        {
+            onJump?.Invoke();
+        }
+    }
+
 
     // Drawing Phase
 

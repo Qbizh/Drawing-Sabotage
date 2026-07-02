@@ -270,6 +270,54 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             ]
         },
         {
+            ""name"": ""ItemPicking"",
+            ""id"": ""ee7a1e68-2e1c-41f0-90b3-af91e28dbf4f"",
+            ""actions"": [
+                {
+                    ""name"": ""Pickup"",
+                    ""type"": ""Button"",
+                    ""id"": ""1b5b4544-8198-4cdb-be1e-7b788999d40c"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Jump"",
+                    ""type"": ""Button"",
+                    ""id"": ""da881f02-5ba4-4620-898a-b3f1ade866e5"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""19c7141a-c2cf-46ab-8bae-c59bc8acd360"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Pickup"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d5b6a7ef-b6c2-47e8-ae98-da8d36e7d001"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Jump"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
             ""name"": ""AlwaysEnabled"",
             ""id"": ""891d16dc-58c3-4d08-bddf-438e7a38872c"",
             ""actions"": [
@@ -309,6 +357,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         // PromptGenerator
         m_PromptGenerator = asset.FindActionMap("PromptGenerator", throwIfNotFound: true);
         m_PromptGenerator_ReRoll = m_PromptGenerator.FindAction("ReRoll", throwIfNotFound: true);
+        // ItemPicking
+        m_ItemPicking = asset.FindActionMap("ItemPicking", throwIfNotFound: true);
+        m_ItemPicking_Pickup = m_ItemPicking.FindAction("Pickup", throwIfNotFound: true);
+        m_ItemPicking_Jump = m_ItemPicking.FindAction("Jump", throwIfNotFound: true);
         // AlwaysEnabled
         m_AlwaysEnabled = asset.FindActionMap("AlwaysEnabled", throwIfNotFound: true);
         m_AlwaysEnabled_MousePosition = m_AlwaysEnabled.FindAction("MousePosition", throwIfNotFound: true);
@@ -318,6 +370,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     {
         UnityEngine.Debug.Assert(!m_Board.enabled, "This will cause a leak and performance issues, PlayerInputActions.Board.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_PromptGenerator.enabled, "This will cause a leak and performance issues, PlayerInputActions.PromptGenerator.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_ItemPicking.enabled, "This will cause a leak and performance issues, PlayerInputActions.ItemPicking.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_AlwaysEnabled.enabled, "This will cause a leak and performance issues, PlayerInputActions.AlwaysEnabled.Disable() has not been called.");
     }
 
@@ -616,6 +669,113 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     /// </summary>
     public PromptGeneratorActions @PromptGenerator => new PromptGeneratorActions(this);
 
+    // ItemPicking
+    private readonly InputActionMap m_ItemPicking;
+    private List<IItemPickingActions> m_ItemPickingActionsCallbackInterfaces = new List<IItemPickingActions>();
+    private readonly InputAction m_ItemPicking_Pickup;
+    private readonly InputAction m_ItemPicking_Jump;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "ItemPicking".
+    /// </summary>
+    public struct ItemPickingActions
+    {
+        private @PlayerInputActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public ItemPickingActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "ItemPicking/Pickup".
+        /// </summary>
+        public InputAction @Pickup => m_Wrapper.m_ItemPicking_Pickup;
+        /// <summary>
+        /// Provides access to the underlying input action "ItemPicking/Jump".
+        /// </summary>
+        public InputAction @Jump => m_Wrapper.m_ItemPicking_Jump;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_ItemPicking; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="ItemPickingActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(ItemPickingActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="ItemPickingActions" />
+        public void AddCallbacks(IItemPickingActions instance)
+        {
+            if (instance == null || m_Wrapper.m_ItemPickingActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ItemPickingActionsCallbackInterfaces.Add(instance);
+            @Pickup.started += instance.OnPickup;
+            @Pickup.performed += instance.OnPickup;
+            @Pickup.canceled += instance.OnPickup;
+            @Jump.started += instance.OnJump;
+            @Jump.performed += instance.OnJump;
+            @Jump.canceled += instance.OnJump;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="ItemPickingActions" />
+        private void UnregisterCallbacks(IItemPickingActions instance)
+        {
+            @Pickup.started -= instance.OnPickup;
+            @Pickup.performed -= instance.OnPickup;
+            @Pickup.canceled -= instance.OnPickup;
+            @Jump.started -= instance.OnJump;
+            @Jump.performed -= instance.OnJump;
+            @Jump.canceled -= instance.OnJump;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="ItemPickingActions.UnregisterCallbacks(IItemPickingActions)" />.
+        /// </summary>
+        /// <seealso cref="ItemPickingActions.UnregisterCallbacks(IItemPickingActions)" />
+        public void RemoveCallbacks(IItemPickingActions instance)
+        {
+            if (m_Wrapper.m_ItemPickingActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="ItemPickingActions.AddCallbacks(IItemPickingActions)" />
+        /// <seealso cref="ItemPickingActions.RemoveCallbacks(IItemPickingActions)" />
+        /// <seealso cref="ItemPickingActions.UnregisterCallbacks(IItemPickingActions)" />
+        public void SetCallbacks(IItemPickingActions instance)
+        {
+            foreach (var item in m_Wrapper.m_ItemPickingActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_ItemPickingActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="ItemPickingActions" /> instance referencing this action map.
+    /// </summary>
+    public ItemPickingActions @ItemPicking => new ItemPickingActions(this);
+
     // AlwaysEnabled
     private readonly InputActionMap m_AlwaysEnabled;
     private List<IAlwaysEnabledActions> m_AlwaysEnabledActionsCallbackInterfaces = new List<IAlwaysEnabledActions>();
@@ -761,6 +921,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnReRoll(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "ItemPicking" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="ItemPickingActions.AddCallbacks(IItemPickingActions)" />
+    /// <seealso cref="ItemPickingActions.RemoveCallbacks(IItemPickingActions)" />
+    public interface IItemPickingActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Pickup" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPickup(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Jump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnJump(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "AlwaysEnabled" which allows adding and removing callbacks.

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Bomb
   m_EditorClassIdentifier: 
   cardName: Bomb
-  description: Blows up pixels
+  description: Blows up and leaves a crater of pixels behind
   texture: {fileID: 2800000, guid: 65524bbb1b8ad2c41817249bc53aab91, type: 3}
   prefab: {fileID: 8678720296005627792, guid: c474e65f74589c344a11f086522e477a, type: 3}

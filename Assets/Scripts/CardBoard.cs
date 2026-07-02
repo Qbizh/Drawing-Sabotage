@@ -56,15 +56,7 @@ public class CardBoard : DrawingBoard
     {
         var oldSprite = cardDisplay.sprite;
 
-        var newTexture = new Texture2D(oldSprite.texture.width, oldSprite.texture.height, TextureFormat.RGBA32, false);
-        newTexture.filterMode = FilterMode.Point;
-        newTexture.wrapMode = TextureWrapMode.Clamp;
-
-        newTexture.CopyPixels(ItemsManager.instance.GetCurrentItem().texture);
-        newTexture.Apply();
-
-        var newSprite = Sprite.Create(newTexture, new Rect(0, 0, oldSprite.texture.width, oldSprite.texture.height), Vector2.one * 0.5f);
-        cardDisplay.sprite = newSprite;
+        cardDisplay.sprite = ItemsManager.instance.GetCurrentItem().GenerateSprite(oldSprite.texture.width, oldSprite.texture.height);
 
         GenerateForegroundMask();
     }

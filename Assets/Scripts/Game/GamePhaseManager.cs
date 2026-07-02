@@ -27,6 +27,7 @@ public class GamePhaseManager : NetworkBehaviour
     { 
         PromptInput,
         PromptGeneration,
+        ItemPicking,
         Drawing,
         Voting,
         Leaderboard

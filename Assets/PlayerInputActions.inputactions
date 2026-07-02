@@ -184,6 +184,54 @@
             ]
         },
         {
+            "name": "ItemPicking",
+            "id": "ee7a1e68-2e1c-41f0-90b3-af91e28dbf4f",
+            "actions": [
+                {
+                    "name": "Pickup",
+                    "type": "Button",
+                    "id": "1b5b4544-8198-4cdb-be1e-7b788999d40c",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Jump",
+                    "type": "Button",
+                    "id": "da881f02-5ba4-4620-898a-b3f1ade866e5",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "19c7141a-c2cf-46ab-8bae-c59bc8acd360",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pickup",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d5b6a7ef-b6c2-47e8-ae98-da8d36e7d001",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
             "name": "AlwaysEnabled",
             "id": "891d16dc-58c3-4d08-bddf-438e7a38872c",
             "actions": [
